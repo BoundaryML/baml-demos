@@ -1,0 +1,21 @@
+# Packed binaries (rebuild with `baml pack`, see README)
+dist/
+
+# Generated Python SDK (rebuild with `baml generate`)
+demo/baml_sdk/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Claude Code local (machine-specific) settings
+.claude/settings.local.json
+
+# Infisical workspace config (machine/org-specific)
+.infisical.json
+
+# macOS
+.DS_Store
+
+.env*

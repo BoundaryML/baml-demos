@@ -1,0 +1,18 @@
+[
+    {
+        "text": "The battery lasts all week — totally worth it.",
+        "expected": "positive"
+    },
+    {
+        "text": "Customer support never replied and the hinge snapped on day three.",
+        "expected": "negative"
+    },
+    {
+        "text": "The package arrived on Tuesday in a cardboard box.",
+        "expected": "neutral"
+    },
+    {
+        "text": "I expected to hate it, but honestly it's brilliant.",
+        "expected": "positive"
+    }
+]
