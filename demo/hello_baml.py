@@ -17,11 +17,11 @@ from baml_sdk import demo  # generated next to this script (baml generate)
 
 def main() -> None:
     for name in ["vbv", "  sheep council  ", "BAML"]:
-        greeting = demo.greet(name)  # -> Greeting(message=..., letters=...)
+        greeting = demo.greet(name=name)  # -> Greeting(message=..., letters=...)
         print(f"{greeting.message:30}  ({greeting.letters} letters)")
 
     # It's a real pydantic model — serialization comes for free.
-    print("\nas JSON:", demo.greet("python").model_dump_json())
+    print("\nas JSON:", demo.greet(name="python").model_dump_json())
 
     # BAML class methods are callable from Python too:
     g = demo.Greeting.new("class methods")  # factory (no self) -> staticmethod

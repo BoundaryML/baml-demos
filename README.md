@@ -225,7 +225,7 @@ becomes a subpackage, and classes come through as pydantic models:
 ```python
 from baml_sdk import demo
 
-greeting = demo.greet("vbv")        # -> Greeting(message='hello, vbv!', letters=3)
+greeting = demo.greet(name="vbv")   # -> Greeting(message='hello, vbv!', letters=3)
 print(greeting.model_dump_json())
 
 # BAML class methods come through too: factories (no self) as staticmethods,
