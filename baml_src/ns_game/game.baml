@@ -23,20 +23,6 @@ function generate_famous_person_name(previous_names: string[]) -> string {
     "#
 }
 
-test test_generate_famous_person_name {
-    functions: [generate_famous_person_name],
-    args: {
-        previous_names: [
-            #"
-                George Orwell
-            "#,
-            #"
-                Albert Einstein
-            "#,
-        ],
-    },
-}
-
 class GuessResponse {
     game_won: bool,
     text: string,
@@ -80,6 +66,10 @@ function take_guess(
 
         {{ history }}
 
+        Famous person:
+
+        {{ famous_person_name }}
+
         Here's the user input:
 
         {{ user_guess }}
@@ -96,32 +86,6 @@ function simulate_human_guess(history: Message[]) -> string {
 
         {{ history }}
     "#
-}
-
-test test_take_guess {
-    functions: [take_guess],
-    args: {
-        user_guess: #"
-            hello world
-        "#,
-        famous_person_name: #"
-            hello world
-        "#,
-        history: [
-            {
-                role: "user",
-                content: #"
-                    hello world
-                "#,
-            },
-            {
-                role: "user",
-                content: #"
-                    hello world
-                "#,
-            },
-        ],
-    },
 }
 
 class Memory {
@@ -153,7 +117,6 @@ function GuessGameAgent() -> GuessResponse {
     history.push(Message { role: "assistant", content: guess_response.text });
 
     let max_guesses = 10;
-
     //## Nested thing
     while (!guess_response.game_won && max_guesses > 0) {
         if (guess_response.game_won) {
@@ -181,31 +144,6 @@ function GuessGameAgent() -> GuessResponse {
     guess_response
 }
 
-test guess_game_agent_test {
-    functions: [guess_game_agent],
-    args: {},
-}
-
-test test_simulate_human_guess {
-    functions: [simulate_human_guess],
-    args: {
-        history: [
-            {
-                role: "user",
-                content: #"
-                    hello world
-                "#,
-            },
-            {
-                role: "user",
-                content: #"
-                    hello world
-                "#,
-            },
-        ],
-    },
-}
-
 function BinarySearch(array: int[], target: int) -> int {
     let left = 0;
     let right = array.length() - 1;
@@ -225,81 +163,108 @@ function BinarySearch(array: int[], target: int) -> int {
     return -1;
 }
 
-test binary_search_test {
-    functions: [binary_search],
-    args: {
-        array: [
-            12,
-            34,
-            56,
-            67,
-            89,
-            90,
-            100,
-            112,
-            134,
-            156,
-            178,
-            190,
-            200,
-            212,
-            234,
-            256,
-            278,
-            290,
-            300,
-            312,
-            334,
-            356,
-            378,
-            390,
-            400,
-            412,
-            434,
-            456,
-            478,
-            490,
-            500,
-            512,
-            534,
-            556,
-            578,
-            590,
-            600,
-            612,
-            634,
-            656,
-            678,
-            690,
-            700,
-            712,
-            734,
-            756,
-            778,
-            790,
-            800,
-            812,
-            834,
-            856,
-            878,
-            890,
-            900,
-            912,
-            934,
-            956,
-            978,
-            990,
-            1000,
-        ],
-        target: 34,
-    },
-}
-
 function print_number(number: int) -> int {
     return 1;
 }
 
+testset "game_llm" {
+    test "generates famous person" {
+        let name = generate_famous_person_name(["George Orwell", "Albert Einstein"]);
+        assert.is_true(name.trim().length() > 0);
+    }
+
+    test "take_guess responds to a question" {
+        let r = take_guess("Was this person a scientist?", "Marie Curie", []);
+        assert.is_true(r.text.trim().length() > 0);
+    }
+
+    test "take_guess can recognize a correct guess" {
+        let r = take_guess("Is it Marie Curie?", "Marie Curie", []);
+        assert.is_true(r.game_won);
+    }
+
+    test "simulates human guess" {
+        let guess = simulate_human_guess(
+            [
+                Message { role: "assistant", content: "Yes, this person was a scientist." },
+                Message { role: "assistant", content: "No, this person was not American." },
+            ],
+        );
+        assert.is_true(guess.trim().length() > 0);
+    }
+}
+
 testset "binary_search_logic" {
+    test "finds_target_in_longer_array" {
+        let idx = BinarySearch(
+            [
+                12,
+                34,
+                56,
+                67,
+                89,
+                90,
+                100,
+                112,
+                134,
+                156,
+                178,
+                190,
+                200,
+                212,
+                234,
+                256,
+                278,
+                290,
+                300,
+                312,
+                334,
+                356,
+                378,
+                390,
+                400,
+                412,
+                434,
+                456,
+                478,
+                490,
+                500,
+                512,
+                534,
+                556,
+                578,
+                590,
+                600,
+                612,
+                634,
+                656,
+                678,
+                690,
+                700,
+                712,
+                734,
+                756,
+                778,
+                790,
+                800,
+                812,
+                834,
+                856,
+                878,
+                890,
+                900,
+                912,
+                934,
+                956,
+                978,
+                990,
+                1000,
+            ],
+            34,
+        );
+        assert.equal(idx, 1);
+    }
+
     for (let i = 0; i < 10; i += 1) {
         test "finds_present_target" + baml.unstable.string(i) {
             let idx = BinarySearch([1, 2, 3, 4, 5], 3);
