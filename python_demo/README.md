@@ -4,7 +4,7 @@ A tiny Python project with **one intentional bug**, so you can watch bamlcode
 read, reason, edit, and re-run.
 
 ```
-demo/
+python_demo/
   fizzbuzz.py        # fizzbuzz(n) — has a bug: 15, 30, 45… print "Fizz", not "FizzBuzz"
   test_fizzbuzz.py   # plain-stdlib test that currently FAILS on 15
 ```
@@ -15,7 +15,7 @@ bamlcode operates on files in **whatever directory you launch it from**, so cd i
 here first:
 
 ```bash
-cd demo
+cd python_demo
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # point at the packed binary (or use the project launcher: ../bamlcode)
@@ -32,7 +32,7 @@ Then type a task, e.g.:
 Or one-shot, without the REPL:
 
 ```bash
-cd demo
+cd python_demo
 ../dist/bamlcode ask --task "run test_fizzbuzz.py, fix the bug it reveals, and re-run it to confirm it passes"
 ```
 
@@ -46,5 +46,5 @@ python3 test_fizzbuzz.py
 # all tests passed ✅
 ```
 
-To reset the demo to its buggy state, just `git checkout demo/` (or re-copy the
+To reset the demo to its buggy state, just `git checkout python_demo/` (or re-copy the
 files).

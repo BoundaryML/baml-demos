@@ -13,7 +13,7 @@
 - Python's asyncio.gather fires 4 fetches concurrently; since the server
   spawns per connection, all 4 finish in ~0.5 s wall clock, not ~2 s.
 
-Run:  uv run demo/server_roundtrip.py   (or just ./demo/server_roundtrip.py)
+Run:  uv run python_demo/server_roundtrip.py   (or just ./python_demo/server_roundtrip.py)
 """
 
 import asyncio

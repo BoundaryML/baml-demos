@@ -31,7 +31,7 @@ function summarize_request(req: string) -> string {
     req.substring(0, i).trim()
 }
 
-function handle(sock: baml.net.Socket, conn_id: int) -> null {
+function handle(sock: baml.net.TcpStream, conn_id: int) -> null {
     let label = "[conn " + baml.unstable.string(conn_id) + "]";
     baml.io.println(label + " accepted");
     let raw = sock.read() catch_all (e) {
@@ -40,13 +40,13 @@ function handle(sock: baml.net.Socket, conn_id: int) -> null {
             return null;
         },
     };
-    baml.io.println(label + " req: " + summarize_request(raw));
+    baml.io.println(label + " req: " + summarize_request(raw.to_string()));
 
     // Simulated work — without spawn this would dominate wall-clock time.
     baml.sys.sleep(500);
 
     let body = "{\"hello\":\"world\",\"conn\":" + baml.unstable.string(conn_id) + "}";
-    let _ = sock.write(build_response(body)) catch_all (e) {
+    let _ = sock.write(build_response(body).to_utf8()) catch_all (e) {
         _ => { baml.io.println(label + " write failed"); null },
     };
     let _ = sock.close() catch_all (e) { _ => null };
@@ -61,7 +61,7 @@ function handle(sock: baml.net.Socket, conn_id: int) -> null {
 // spawn in a per-call helper isolates the capture: each call gets its own
 // `sock`/`id` function parameters.
 function spawn_handler(
-    sock: baml.net.Socket,
+    sock: baml.net.TcpStream,
     id: int,
 ) -> baml.future.Future<null, baml.errors.InvalidArgument | baml.errors.Io> {
     spawn { handle(sock, id) }
@@ -69,7 +69,7 @@ function spawn_handler(
 
 /// Bind, accept, spawn per connection. Loops forever — Ctrl-C to exit.
 function serve() -> null {
-    let listener = baml.net.listen("127.0.0.1:8080");
+    let listener = baml.net.TcpListener.bind("127.0.0.1:8080");
     baml.io
         .println(
             "listening on http://127.0.0.1:8080 — fire concurrent curls and watch them all return in ~0.5s",

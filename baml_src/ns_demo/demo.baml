@@ -1,6 +1,6 @@
 // Namespace root.demo — a minimal BAML function for the Python-interop demo.
 // Python calls this through the generated `baml_sdk` package (see
-// demo/hello_baml.py); regenerate with `baml generate` after editing.
+// python_demo/hello_baml.py); regenerate with `baml generate` after editing.
 
 class Greeting {
     message: string,
@@ -41,7 +41,7 @@ class ServerReply {
 }
 
 // Curl the ns_server demo with BAML's own HTTP client, decoding the JSON
-// body into a typed ServerReply. (demo/server_roundtrip.py runs server.serve
+// body into a typed ServerReply. (python_demo/server_roundtrip.py runs server.serve
 // in a Python thread, then awaits this concurrently via fetch_reply_async.)
 function fetch_reply(url: string) -> ServerReply {
     let res = baml.http.fetch(url);

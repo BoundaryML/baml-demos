@@ -84,16 +84,16 @@ binary (host platform by default; cross-compile with `--target <triple>`).
 
 ## Try it on the demo
 
-There's a tiny buggy Python project in [`demo/`](demo/) to play with:
+There's a tiny buggy Python project in [`python_demo/`](python_demo/) to play with:
 
 ```bash
-cd demo
+cd python_demo
 export ANTHROPIC_API_KEY=sk-ant-...
 ../dist/bamlcode ask --task "run test_fizzbuzz.py, fix the bug it reveals, then re-run it"
 ```
 
 bamlcode operates on files in whatever directory you launch it from. See
-[`demo/README.md`](demo/README.md) for more prompts to try.
+[`python_demo/README.md`](python_demo/README.md) for more prompts to try.
 
 ## Queuing messages
 
@@ -209,7 +209,7 @@ baml_src/
   generators.baml   # codegen config: emits the typed Python `baml_sdk` package
 testdata/
   sentiment_cases.json  # editable eval cases (from_file / from_api testsets)
-demo/
+python_demo/
   baml_sdk/            # GENERATED Python package (baml generate) — do not edit
   hello_baml.py        # Python ↔ BAML interop demo (calls demo.greet via baml_sdk)
   server_roundtrip.py  # BAML server in a Python thread + concurrent BAML fetches
@@ -218,7 +218,7 @@ dist/               # packed binaries (gitignored — rebuild: baml run build.ru
 
 ## Calling BAML from Python
 
-`baml generate` emits a typed `baml_sdk` package into `demo/`, right next to
+`baml generate` emits a typed `baml_sdk` package into `python_demo/`, right next to
 the Python scripts that import it (no sys.path tweaking); each BAML namespace
 becomes a subpackage, and classes come through as pydantic models:
 
@@ -241,8 +241,8 @@ The demo scripts carry their dependencies as PEP 723 inline metadata, so uv
 handles them automatically:
 
 ```bash
-uv run demo/hello_baml.py          # basics: functions, class methods, pydantic
-uv run demo/server_roundtrip.py    # serve in BAML, fetch in BAML, orchestrate in Python
+uv run python_demo/hello_baml.py          # basics: functions, class methods, pydantic
+uv run python_demo/server_roundtrip.py    # serve in BAML, fetch in BAML, orchestrate in Python
 ```
 
 `server_roundtrip.py` is the fun one: it runs `server.serve` in a daemon

@@ -129,13 +129,13 @@ function fetch_cases(url: string) -> Case[] {
 // of the cases file, exit. Reuses root.server.build_response for the HTTP
 // framing. Spawned by the from_api testset so the test is self-contained.
 function serve_cases_once(addr: string) -> null {
-    let listener = baml.net.listen(addr);
+    let listener = baml.net.TcpListener.bind(addr);
     let sock = listener.accept();
     let _req = sock.read() catch_all (e) {
         _ => "",
     };
     let body = baml.fs.read(cases_path());
-    let _w = sock.write(root.server.build_response(body)) catch_all (e) {
+    let _w = sock.write(root.server.build_response(body).to_utf8()) catch_all (e) {
         _ => 0,
     };
     let _c = sock.close() catch_all (e) {

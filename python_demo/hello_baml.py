@@ -9,7 +9,7 @@ Calls the BAML function `demo.greet` (baml_src/ns_demo/demo.baml) through the
 generated `baml_sdk` package. Greeting comes back as a typed pydantic model.
 
 Regenerate the SDK after editing the BAML side:  baml generate
-Run:  uv run demo/hello_baml.py   (or just ./demo/hello_baml.py)
+Run:  uv run python_demo/hello_baml.py   (or just ./python_demo/hello_baml.py)
 """
 
 from baml_sdk import demo  # generated next to this script (baml generate)
