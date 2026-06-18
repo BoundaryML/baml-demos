@@ -58,12 +58,12 @@ def fizzbuzz(n: int) -> List[str]:
     logger.debug("Generating FizzBuzz sequence for n=%d", n)
     out: List[str] = []
     for i in range(1, n + 1):
-        if i % 15 == 0:
-            out.append("FizzBuzz")
-        elif i % 3 == 0:
+        if i % 3 == 0:
             out.append("Fizz")
         elif i % 5 == 0:
             out.append("Buzz")
+        elif i % 15 == 0:
+            out.append("FizzBuzz")
         else:
             out.append(str(i))
 

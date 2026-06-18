@@ -1,67 +1,51 @@
-# Calling BAML from TypeScript
+# bamlcode demo (TypeScript)
 
-The Node/TypeScript twin of [`python_demo/`](../python_demo/). Same two BAML-interop scripts as
-the Python demo, calling the same BAML functions through the generated
-`baml_sdk` package — just from Node instead of CPython.
+A tiny TypeScript project with **one intentional bug**, so you can watch bamlcode
+read, reason, edit, and re-run.
 
-| Python (`python_demo/`)        | TypeScript (`typescript_demo/`)   | BAML it calls                        |
-|-------------------------|---------------------------|--------------------------------------|
-| `hello_baml.py`         | `hello_baml.ts`           | `demo.greet`, `Greeting` methods     |
-| `server_roundtrip.py`   | `server_roundtrip.ts`     | `server.serve`, `demo.fetch_reply`   |
-
-(The `fizzbuzz.py` / `twosum.py` files in `python_demo/` aren't interop — they're scratch
-files for the bamlcode agent to edit, so they have no TS counterpart.)
-
-## Generate the SDK
-
-`baml generate` emits a typed `baml_sdk` package into `typescript_demo/`, right next to
-the scripts that import it. Each BAML namespace becomes a subpackage, and classes
-come through as plain typed classes (with their BAML methods attached):
-
-```bash
-baml generate          # emits typescript_demo/baml_sdk/ (and python_demo/baml_sdk/ for Python)
+```
+typescript_demo/
+  fizzbuzz.ts        # fizzbuzz(n) — has a bug: 15, 30, 45… return "Fizz", not "FizzBuzz"
+  test_fizzbuzz.ts   # plain-stdlib (node:test) test that currently FAILS on 15
 ```
 
-The generator block lives in `baml_src/generators.baml` (`generator ts_target`,
-`output_type "typescript/node"`). The generated code imports the
-`@boundaryml/baml-core-node` runtime.
+## Try it
 
-## Run
+bamlcode operates on files in **whatever directory you launch it from**, so cd in
+here first:
 
 ```bash
 cd typescript_demo
-pnpm install              # links @boundaryml/baml-core-node + tsx
+pnpm install                         # one-time: tsx + the BAML runtime
+export ANTHROPIC_API_KEY=sk-ant-...
 
-pnpm hello            # basics: functions, class methods, JSON
-pnpm server           # serve in BAML, fetch in BAML, orchestrate in Node
-pnpm typecheck        # tsc --noEmit over the scripts + generated SDK
+# point at the packed binary (or use the project launcher: ../bamlcode)
+../dist/bamlcode main
 ```
 
-`pnpm hello` needs no API keys; `server` needs none either (the server demo
-makes no LLM calls).
+Then type a task, e.g.:
 
-## How it maps to the Python demo
+- `run the tests and tell me what's failing`
+- `the fizzbuzz test fails on 15 — find and fix the bug, then re-run the tests`
+- `run npx tsx fizzbuzz.ts and explain the output`
+- `add a test for fizzbuzz(30) and make sure it passes`
 
-```ts
-import { demo } from "./baml_sdk/index.js";
+Or one-shot, without the REPL:
 
-const greeting = demo.greet({ name: "vbv" }); // -> Greeting { message, letters }
-JSON.stringify(greeting);                      // typed object → JSON for free
-
-// BAML class methods come through too: factories (no self) as static methods,
-// instance methods as bound methods on the instance.
-const g = demo.Greeting.new("class methods");  // static factory
-g.shout();                                      // 'HELLO, CLASS METHODS!'
-g.repeated(3);                                  // -> Greeting (chainable)
+```bash
+cd typescript_demo
+../dist/bamlcode ask --task "run npx tsx --test test_fizzbuzz.ts, fix the bug it reveals, and re-run it to confirm it passes"
 ```
 
-Every function also gets an `_async` twin (`greet_async`, `fetch_reply_async`, …)
-returning a `Promise`. `server_roundtrip.ts` uses those: it kicks off
-`server.serve_async()` without awaiting (BAML runs it on its own async runtime —
-the analog of Python's daemon thread), then `Promise.all`s 4
-`demo.fetch_reply_async` calls. All 4 finish in ~0.5 s wall clock even though each
-handler sleeps 500 ms, because the BAML server `spawn`s a task per connection:
+## What "fixed" looks like
 
+The bug is an ordering problem — `n % 3 === 0` catches multiples of 15 before the
+`n % 15 === 0` branch ever runs. After the fix:
+
+```bash
+npx tsx --test test_fizzbuzz.ts
+# all tests passed ✅
 ```
-4 concurrent fetches in 0.50s (handlers sleep 0.5s each — spawn works)
-```
+
+To reset the demo to its buggy state, just `git checkout typescript_demo/` (or
+re-copy the files).
