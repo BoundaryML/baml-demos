@@ -1,0 +1,6 @@
+email,firstName,lastName,company,title,notes
+sarah.chen@acmecorp.io,Sarah,Chen,Acme Corp,VP of Engineering,Met at AWS re:Invent booth - interested in our AI features
+james.miller@globex.com,James,Miller,Globex Inc,Head of Cloud Infrastructure,Stopped by booth during keynote break - asked about pricing
+priya.patel@initech.dev,Priya,Patel,Initech,Director of Platform Engineering,Scanned badge at demo station - watched full product walkthrough
+marcus.johnson@hooli.co,Marcus,Johnson,Hooli,CTO,Asked about enterprise plan and SOC2 compliance
+elena.rodriguez@piedpiper.io,Elena,Rodriguez,Pied Piper,Senior DevOps Lead,Interested in migration tooling - currently on legacy stack

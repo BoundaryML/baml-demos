@@ -2,14 +2,14 @@
 dist/
 
 # Generated Python SDK (rebuild with `baml generate`)
-python_demo/baml_sdk/
+bamlcode/python_demo/baml_sdk/
 
 # Generated TypeScript SDK (rebuild with `baml generate`)
-typescript_demo/baml_sdk/
+bamlcode/typescript_demo/baml_sdk/
 
 # Node
 node_modules/
-typescript_demo/pnpm-lock.yaml
+bamlcode/typescript_demo/pnpm-lock.yaml
 
 # BAML runtime state (profiling caches written when running baml)
 .baml/

@@ -1,0 +1,12 @@
+.env
+.venv/
+.baml/
+__pycache__/
+*.pyc
+
+# Generated BAML SDK — reproduce with `baml generate`.
+baml_sdk/
+
+# Supabase local CLI state (machine-specific)
+supabase/.temp/
+supabase/.branches/

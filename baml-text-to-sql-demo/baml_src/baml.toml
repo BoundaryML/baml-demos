@@ -1,0 +1,10 @@
+[package]
+name = "text_to_sql"
+
+# Emit a typed Python (Pydantic v2) SDK next to the Python bridge code.
+# `import baml_sdk` then gives `run_text_to_sql`, `GenerateSQL`, and every
+# class/enum below as native Pydantic models. Run `baml generate` after edits.
+[generator.app]
+output_type = "python/pydantic"
+output_dir = ".."
+naming_convention = "preserve-case"

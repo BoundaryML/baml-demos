@@ -1,0 +1,9 @@
+[package]
+name = "baml_email_agent"
+
+# Generate a typed Python (Pydantic v2) SDK next to the bridge script.
+# `baml generate` emits `./baml_sdk/` which `run_campaign.py` imports.
+[generator.app]
+output_type = "python/pydantic"
+output_dir = "."
+naming_convention = "preserve-case"

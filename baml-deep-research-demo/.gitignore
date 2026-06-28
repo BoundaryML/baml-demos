@@ -1,0 +1,7 @@
+baml_sdk/
+.baml/
+.venv/
+uv.lock
+.env
+report.md
+__pycache__/

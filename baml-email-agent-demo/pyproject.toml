@@ -1,0 +1,18 @@
+[project]
+name = "baml-email-agent-demo"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "baml_core",
+    "pydantic>=2",
+    "streamlit>=1.40",
+]
+
+[tool.uv]
+package = false
+
+# The BAML runtime. Points at the in-repo Python bridge so the demo runs
+# against the locally-built engine. Swap for `baml_core = ">=0.12"` from PyPI
+# once you're on a released build.
+[tool.uv.sources]
+baml_core = { path = "/Users/sam/baml/baml_language/sdks/python", editable = true }
