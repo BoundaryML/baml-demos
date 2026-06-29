@@ -56,15 +56,10 @@ One definition, typed end to end.
 
 ## Setup
 
-Requires Python 3.10+, [uv](https://docs.astral.sh/uv/), a PostgreSQL database, and the BAML CLI.
+Requires Python 3.10+, [uv](https://docs.astral.sh/uv/), the [Supabase CLI](https://supabase.com/docs/guides/cli) (with Docker running), the [Infisical CLI](https://infisical.com/docs/cli/overview), and the BAML CLI.
 
 ```bash
 cd baml-text-to-sql-demo
-
-# Config comes entirely from the environment (no .env loading):
-export OPENAI_API_KEY=sk-...
-export DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres
-# export MODEL=gpt-4o          # optional, defaults to gpt-4o
 
 # Generate the typed Python SDK from baml_src/ (creates ./baml_sdk).
 baml generate --from baml_src
@@ -72,15 +67,26 @@ baml generate --from baml_src
 uv sync                       # installs baml_core, psycopg2-binary, pydantic
 ```
 
-### A database, via Supabase
+### 1. Start a local Postgres with Supabase
 
-This project ships a [Supabase](https://supabase.com/docs/guides/cli/local-development) config for a one-command local Postgres:
+This project ships a [Supabase](https://supabase.com/docs/guides/cli/local-development) config for a one-command local Postgres (needs Docker running):
 
 ```bash
-supabase start               # boots local Postgres (Docker)
+supabase start               # boots local Postgres in Docker (first run pulls images)
 ```
 
-It serves Postgres at `postgresql://postgres:postgres@127.0.0.1:54422/postgres` — use that as your `DATABASE_URL`. The db port is remapped to **54422** (`supabase/config.toml`) so it won't collide with any other local Supabase instance. Run `supabase stop` when you're done. Any PostgreSQL URL works too — just point `DATABASE_URL`/`--db` at it.
+It serves Postgres at `postgresql://postgres:postgres@127.0.0.1:54422/postgres`. The db port is remapped to **54422** (`supabase/config.toml`) so it won't collide with any other local Supabase instance. Check status with `supabase status`, and run `supabase stop` when you're done. Any PostgreSQL URL works too — just point `DATABASE_URL`/`--db` at it.
+
+### 2. Secrets, via Infisical
+
+Config comes entirely from the environment (no `.env` loading). `OPENAI_API_KEY` is pulled from [Infisical](https://infisical.com/docs/cli/overview) — `.infisical.json` pins the workspace, so `infisical run -- <cmd>` injects the secrets before the process starts. Log in once with `infisical login`.
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres
+# export MODEL=gpt-4o          # optional, defaults to gpt-4o
+```
+
+`DATABASE_URL` points at the local Supabase from step 1 (or any Postgres). `OPENAI_API_KEY` (and any other secrets) arrive via Infisical at run time — see [Run](#run).
 
 > The BAML CLI used during development is the local toolchain binary
 > (`~/baml/baml_language/target/debug/baml-cli generate --from baml_src`).
@@ -92,8 +98,11 @@ It serves Postgres at `postgresql://postgres:postgres@127.0.0.1:54422/postgres` 
 ### Streamlit UI
 
 ```bash
-uv run streamlit run app.py
+# Infisical injects OPENAI_API_KEY from the pinned workspace, then runs Streamlit:
+infisical run --projectId bdd280e2-259c-4750-9b16-a8597a67214c -- uv run streamlit run app.py
 ```
+
+`.infisical.json` already pins this `projectId`, so `infisical run -- uv run streamlit run app.py` works too. (Without Infisical, just `export OPENAI_API_KEY=sk-...` and run `uv run streamlit run app.py` directly.)
 
 A browser app: connect to a database in the sidebar, **🌱 Seed sample data** if it's empty, then ask questions in natural language. Each answer shows the generated SQL, a confidence meter, the tables used, assumptions, and the result table — all from the one `run_text_to_sql` BAML call. Pick the model in the sidebar. `OPENAI_API_KEY` is read from the environment.
 
