@@ -17,7 +17,7 @@ rule() { printf '\n\033[1;36m──────── %s ───────�
 rule "1. The C program  ($SRC)"
 cat "$SRC"
 
-rule "2. Compiled to x86-64 assembly — by ~900 lines of BAML, zero LLM calls"
+rule "2. Compiled to x86-64 assembly"
 "$BAML" run cc.emit -- --path "$SRC" 2>/dev/null | grep -v '^null$'
 
 rule "3. Assembled + linked + run  (BAML shells out to gcc, then runs it)"

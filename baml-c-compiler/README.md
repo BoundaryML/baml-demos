@@ -1,11 +1,8 @@
 # baml-c-compiler
 
-A small **C → x86-64 compiler written entirely in [BAML](https://github.com/boundaryml/baml)** —
-**no LLM anywhere.** ~900 lines across 7 `.baml` files: it lexes C, parses it to a
-typed AST, and emits real x86-64 assembly that `gcc` then assembles, links, and runs.
-
-The point: BAML — the language you'd reach for to build LLM agents — is *also* a
-real general-purpose language. Real enough to write a compiler in.
+A small **C → x86-64 compiler written entirely in [BAML](https://github.com/boundaryml/baml)**.
+It lexes C, parses it to a typed AST, and emits real x86-64 assembly that `gcc`
+then assembles, links, and runs.
 
 ## What it can compile
 
@@ -21,7 +18,7 @@ hello world. **Not yet:** other types, pointers, arrays, structs, `for`, preproc
 From this directory (needs `baml` on the **canary** channel and a `gcc`):
 
 ```bash
-baml test                                   # 7 deterministic tests — no LLM, no tokens
+baml test                                   # run the 7 deterministic tests
 
 ./demo.sh examples/fib.c                    # narrated: C source → assembly → running program
 
