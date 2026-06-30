@@ -67,3 +67,59 @@ function run(path: string) -> null {
     baml.io.print(build_and_run(path));
     null
 }
+
+// ── AArch64 / Apple Silicon (macOS) target ──────────────────────────────────
+
+function compile_inner_arm64(src: string) -> string throws CError {
+    let toks = tokenize(src);
+    let prog = parse(toks);
+    codegen_arm64(prog)
+}
+
+function compile_source_arm64(src: string) -> string {
+    compile_inner_arm64(src) catch (e) {
+        CError => "// compile error: " + e.message + "\n"
+    }
+}
+
+function compile_arm64(path: string) -> string {
+    let src = baml.fs.read(path) catch (e) {
+        _ => ""
+    };
+    if (src.char_count() == 0) {
+        return "// error: could not read " + path + "\n";
+    };
+    compile_source_arm64(src)
+}
+
+function build_and_run_arm64(src: string) -> string {
+    let asm = compile_arm64(src);
+    let s_path = "/tmp/baml_cc_arm64.s";
+    let bin_path = "/tmp/baml_cc_arm64";
+    baml.fs.write(s_path, asm) catch (e) {
+        _ => 0
+    };
+    let build = baml.sys.shell("gcc " + s_path + " -o " + bin_path, null);
+    if (!build.ok()) {
+        return "assemble/link failed:\n" + build.stderr.to_string();
+    };
+    let run = baml.sys.shell(bin_path, null);
+    "--- program output ---\n"
+        + run.stdout.to_string()
+        + "--- exit code: "
+        + string.from(run.exit_code)
+        + " ---\n"
+}
+
+// Print the AArch64/macOS assembly our compiler emits for a C source file.
+function emit_arm64(path: string) -> null {
+    baml.io.print(compile_arm64(path));
+    null
+}
+
+// Compile a C file to AArch64, build it with the host gcc/clang, run it (use
+// this one on an Apple Silicon Mac), and print the program's output.
+function run_arm64(path: string) -> null {
+    baml.io.print(build_and_run_arm64(path));
+    null
+}
