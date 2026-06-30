@@ -14,12 +14,42 @@ comparison (`+ - * / %   < <= > >= == !=`, unary `-`) · parentheses.
 Verified working: recursive `fib(10) = 55`, `10! = 3628800`, a counting loop,
 hello world. **Not yet:** other types, pointers, arrays, structs, `for`, preprocessor.
 
-## Run it
+## Setup (Apple Silicon Mac)
 
-From this directory (needs `baml` on the **canary** channel and a `gcc`/`clang`).
-`demo.sh` auto-selects the backend for your CPU:
+**Prerequisite:** Xcode Command Line Tools — `xcode-select --install`. Provides
+`clang` (and the `gcc`/`as`/`ld` shims) used to assemble + link the emitted `.s`.
+
+Then you need the `baml` CLI. Either works:
+
+**A — Installed `baml` (simplest).** If you have it via Homebrew
+(`brew install boundaryml/tap/baml`), you're set: `baml.toml` here pins the
+**canary** toolchain, so the first `baml` command in this directory auto-fetches
+it. Confirm with `baml --version`, then jump to **Run it**.
+
+**B — Built from the baml repo (verified fallback).** If step A's `baml test`
+reports a parse/check error, your published canary is older than this demo — build
+the CLI from your local `baml` checkout and run the demo against it:
 
 ```bash
+cd /path/to/baml/baml_language            # e.g. ../baml/baml_language
+cargo build -p baml_cli --bin baml-cli    # → target/debug/baml-cli
+
+# Point the demo at it (export once; demo.sh and the raw commands honor $BAML):
+export BAML=/path/to/baml/baml_language/target/debug/baml-cli
+export BAML_CLI_ALLOW_DIRECT=1            # silences a "use the wrapper" notice
+```
+
+With **A**, run the commands below as written (`baml ...`). With **B**, prefix
+them with `$BAML` instead (`$BAML test`, `$BAML run cc.run_arm64 -- ...`);
+`./demo.sh` picks up `$BAML` automatically either way. This is the exact path
+verified on an M-series Mac.
+
+## Run it
+
+`demo.sh` auto-selects the backend for your CPU (AArch64 on Apple Silicon):
+
+```bash
+chmod +x demo.sh                            # once — the script ships non-executable
 baml test                                   # run the 7 deterministic tests
 ./demo.sh examples/fib.c                    # narrated: C source → assembly → running program
 ```
@@ -46,10 +76,7 @@ fib(10) = 55
 ```
 
 Examples in [`examples/`](examples/): `return_42`, `arithmetic`, `hello`, `loop`,
-`fib`, `factorial`.
-
-> Using a locally built compiler instead of an installed one? Prefix any command
-> with `BAML=/path/to/baml-cli` (the demo script honors it too).
+`fib`, `factorial`. All six are verified working on Apple Silicon (M-series).
 
 ## How it works
 
