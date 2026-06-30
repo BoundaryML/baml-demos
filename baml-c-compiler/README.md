@@ -49,7 +49,6 @@ verified on an M-series Mac.
 `demo.sh` auto-selects the backend for your CPU (AArch64 on Apple Silicon):
 
 ```bash
-chmod +x demo.sh                            # once — the script ships non-executable
 baml test                                   # run the 7 deterministic tests
 ./demo.sh examples/fib.c                    # narrated: C source → assembly → running program
 ```
