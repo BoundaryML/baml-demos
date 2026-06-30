@@ -1,0 +1,5 @@
+[package]
+name = "baml-c-compiler"
+
+[toolchain]
+channel = "canary"
