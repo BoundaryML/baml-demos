@@ -132,7 +132,7 @@ testset "from_api" {
         let fut = spawn {
             serve_cases_once("127.0.0.1:8091")
         };
-        baml.sys.sleep(150); // let the listener come up
+        baml.sys.sleep(baml.time.Duration.from_milliseconds(150)); // let the listener come up
 
         let fetched = fetch_cases("http://127.0.0.1:8091/cases");
         let from_disk = load_cases(cases_path());

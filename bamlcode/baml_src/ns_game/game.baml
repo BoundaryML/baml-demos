@@ -266,7 +266,7 @@ testset "binary_search_logic" {
     }
 
     for (let i = 0; i < 10; i += 1) {
-        test "finds_present_target" + baml.unstable.string(i) {
+        test `finds_present_target${i}` {
             let idx = BinarySearch([1, 2, 3, 4, 5], 3);
             assert.equal(idx, 2);
         }

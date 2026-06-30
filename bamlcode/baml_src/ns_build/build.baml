@@ -41,5 +41,5 @@ function run() -> string throws string | baml.errors.Io | baml.errors.Timeout {
         baml.io.println("  ✓ " + t.out);
     }
 
-    "packed " + baml.unstable.string(targets.length()) + " binaries into dist/"
+    `packed ${targets.length()} binaries into dist/`
 }

@@ -14,9 +14,7 @@
 function build_response(body: string) -> string {
     "HTTP/1.1 200 OK\r\n"
         + "Content-Type: application/json\r\n"
-        + "Content-Length: "
-        + baml.unstable.string(body.byte_length())
-        + "\r\n"
+        + `Content-Length: ${body.byte_length()}\r\n`
         + "Connection: close\r\n"
         + "\r\n"
         + body
@@ -25,14 +23,14 @@ function build_response(body: string) -> string {
 // Pull "METHOD /path HTTP/1.1" off the first line for logging.
 function summarize_request(req: string) -> string {
     let i = req.index_of("\r\n");
-    if (i < 0) {
+    if (!i) {
         return req.trim();
     };
     req.substring(0, i).trim()
 }
 
 function handle(sock: baml.net.TcpStream, conn_id: int) -> null {
-    let label = "[conn " + baml.unstable.string(conn_id) + "]";
+    let label = `[conn ${conn_id}]`;
     baml.io.println(label + " accepted");
     let raw = sock.read() catch_all (e) {
         _ => {
@@ -43,13 +41,18 @@ function handle(sock: baml.net.TcpStream, conn_id: int) -> null {
     baml.io.println(label + " req: " + summarize_request(raw.to_string()));
 
     // Simulated work — without spawn this would dominate wall-clock time.
-    baml.sys.sleep(500);
+    baml.sys.sleep(baml.time.Duration.from_milliseconds(500));
 
-    let body = "{\"hello\":\"world\",\"conn\":" + baml.unstable.string(conn_id) + "}";
+    let body = `{"hello":"world","conn":${conn_id}}`;
     let _ = sock.write(build_response(body).to_utf8()) catch_all (e) {
-        _ => { baml.io.println(label + " write failed"); null },
+        _ => {
+            baml.io.println(label + " write failed");
+            null
+        },
     };
-    let _ = sock.close() catch_all (e) { _ => null };
+    let _ = sock.close() catch_all (e) {
+        _ => null
+    };
     baml.io.println(label + " done");
     null
 }

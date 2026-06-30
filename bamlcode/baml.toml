@@ -1,8 +1,14 @@
 [package]
-name = "week-2"
+name = "bamlcode"
 
-[toolchain]
-channel = "canary"
+# Emit a typed Python (Pydantic v2) SDK next to the Python bridge code.
+[generator.py]
+output_type = "python/pydantic"
+output_dir = "./python_demo"
+naming_convention = "preserve-case"
 
-# [scripts]
-# dev = "-f main"
+
+[generator.ts]
+output_type = "typescript/node"
+output_dir = "./typescript_demo"
+naming_convention = "preserve-case"

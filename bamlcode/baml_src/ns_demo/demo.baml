@@ -46,18 +46,17 @@ class ServerReply {
 function fetch_reply(url: string) -> ServerReply {
     let res = baml.http.fetch(url);
     if (!res.ok()) {
-        throw "HTTP " + baml.unstable.string(res.status_code) + " from " + url;
+        throw `HTTP ${res.status_code} from ${url}`;
     };
     baml.json.from_string<ServerReply>(res.text())
 }
-
 
 function retry<T>(times: int, fn: () -> T) -> T {
     for (let i = 0; i < times; i += 1) {
         let result = fn();
         return result;
     }
-    throw "Failed to get a result " + baml.unstable.string(times) + " attempts";
+    throw `Failed to get a result ${times} attempts`;
 }
 
 function foo() -> int {

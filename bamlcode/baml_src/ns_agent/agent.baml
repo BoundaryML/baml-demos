@@ -98,7 +98,7 @@ function tool_write_file(path: string, content: string) -> string {
         return "ERROR: write_file needs a `path`.";
     };
     let n = baml.fs.write(path, content);
-    "Wrote " + baml.unstable.string(n) + " bytes to " + path + "."
+    `Wrote ${n} bytes to ${path}.`
 }
 
 function tool_edit_file(path: string, old_str: string, new_str: string) -> string {
@@ -146,7 +146,7 @@ function tool_run_bash(command: string) -> string {
     let out = baml.sys.shell(command, null);
     let stdout = out.stdout.to_string();
     let stderr = out.stderr.to_string();
-    let header = "exit code: " + baml.unstable.string(out.exit_code);
+    let header = `exit code: ${out.exit_code}`;
     let with_out = if (stdout.trim().length() > 0) {
         header + "\n--- stdout ---\n" + stdout
     } else {
@@ -203,11 +203,7 @@ function describe_call(step: Step) -> string {
     match (step.action) {
         "read_file" => "read " + (step.path ?? "?"),
         "write_file" => {
-            "write "
-                + (step.path ?? "?")
-                + " ("
-                + baml.unstable.string((step.content ?? "").length())
-                + " chars)"
+            `write ${step.path ?? "?"} (${(step.content ?? "").length()} chars)`
         },
         "edit_file" => "edit " + (step.path ?? "?"),
         "list_dir" => "ls " + (step.path ?? "."),
@@ -266,7 +262,7 @@ function run_turn(history: string, user_msg: string) -> Turn {
                 + "\n";
     }
 
-    answer = "(stopped after " + baml.unstable.string(max_steps) + " steps without finishing)";
+    answer = `(stopped after ${max_steps} steps without finishing)`;
     say("\n" + style_assistant(answer) + "\n");
     Turn {
         answer: answer,
@@ -341,10 +337,7 @@ function run_supervised(history: string, msg: string) -> Turn {
                         + root
                             .ansi
                             .yellow(
-                                "✚ queued for after this turn ("
-                                    + baml.unstable.string(queued.length())
-                                    + " waiting): "
-                                    + probe.queued,
+                                `✚ queued for after this turn (${queued.length()} waiting): ${probe.queued}`,
                             )
                         + "\n",
                 );
@@ -355,13 +348,17 @@ function run_supervised(history: string, msg: string) -> Turn {
     let turn = if (cancelled) {
         interrupt_turn(history, 0)
     } else {
-        (await fut) catch (e) {
-            _ => Turn {
-                answer: "(the turn failed — see the error above)",
-                transcript: history + "\n[turn errored]\n",
-                steps: 0,
-                interrupted: false,
-                queued: [],
+        (
+            await fut
+        ) catch (e) {
+            _ => {
+                Turn {
+                    answer: "(the turn failed — see the error above)",
+                    transcript: history + "\n[turn errored]\n",
+                    steps: 0,
+                    interrupted: false,
+                    queued: [],
+                }
             }
         }
     };
@@ -408,9 +405,7 @@ function main() -> string {
             } else if (msg.starts_with("/queue ") || msg.starts_with("/q ")) {
                 queue.push(command_arg(msg));
                 say(
-                    "  ✚ queued — "
-                        + baml.unstable.string(queue.length())
-                        + " waiting. Queue more, or press enter to run them.\n",
+                    `  ✚ queued — ${queue.length()} waiting. Queue more, or press enter to run them.\n`,
                 );
             } else if (msg.length() == 0) {
                 // Empty line = "run whatever is queued now".
@@ -450,18 +445,7 @@ function run_queue(history: string, queue: string[]) -> string {
     while (i < queue.length()) {
         let m = queue[i];
         i = i + 1;
-        say(
-            root.ansi
-                .magenta(
-                    "\n◆ queued ("
-                        + baml.unstable.string(i)
-                        + "/"
-                        + baml.unstable.string(queue.length())
-                        + ") › "
-                        + m,
-                )
-                + "\n",
-        );
+        say(root.ansi.magenta(`\n◆ queued (${i}/${queue.length()}) › ${m}`) + "\n");
         let t = run_supervised(h, m);
         h = t.transcript;
         for (let q in t.queued) {
@@ -469,15 +453,7 @@ function run_queue(history: string, queue: string[]) -> string {
         }
         if (t.interrupted) {
             let left = queue.length() - i;
-            say(
-                root.ansi
-                    .yellow(
-                        "⨂ cancelled — skipped "
-                            + baml.unstable.string(left)
-                            + " queued message(s).",
-                    )
-                    + "\n",
-            );
+            say(root.ansi.yellow(`⨂ cancelled — skipped ${left} queued message(s).`) + "\n");
             return h;
         };
     }
@@ -500,7 +476,7 @@ function prompt_label(queue: string[]) -> string {
     if (queue.length() > 0) {
         "\n"
             + root.ansi.bold("you")
-            + root.ansi.gray(" (" + baml.unstable.string(queue.length()) + " queued)")
+            + root.ansi.gray(` (${queue.length()} queued)`)
             + root.ansi.bold(" › ")
     } else {
         "\n" + root.ansi.bold("you › ")
@@ -516,7 +492,7 @@ function show_queue(queue: string[]) -> string {
         let i = 0;
         for (let m in queue) {
             i = i + 1;
-            lines.push("  " + root.ansi.cyan(baml.unstable.string(i) + ".") + " " + m);
+            lines.push("  " + root.ansi.cyan(`${i}.`) + " " + m);
         }
         root.ansi.gray("  queued messages:") + "\n" + lines.join("\n") + "\n"
     }
@@ -623,17 +599,14 @@ function with_line_numbers(body: string) -> string {
     let i = 0;
     for (let l in lines) {
         i = i + 1;
-        out.push(baml.unstable.string(i) + "\t" + l);
+        out.push(`${i}\t${l}`);
     }
     out.join("\n")
 }
 
 function clip(text: string, n: int) -> string {
     if (text.length() > n) {
-        text.substring(0, n)
-            + "\n… ("
-            + baml.unstable.string(text.length() - n)
-            + " more chars truncated)"
+        text.substring(0, n) + `\n… (${text.length() - n} more chars truncated)`
     } else {
         text
     }

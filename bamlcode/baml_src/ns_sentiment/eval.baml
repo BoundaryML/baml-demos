@@ -93,7 +93,7 @@ function case_name(i: int, c: Case) -> string {
     // file-decoded strings (or full-length substrings, which return the
     // original) into dynamic testset names breaks discovery on this
     // toolchain — the registry re-reads the name as "" during expansion.
-    baml.unstable.string(i) + " - " + slug(c.text.substring(0, 40))
+    `${i} - ${slug(c.text.substring(0, 40))}`
 }
 
 function case_names() -> string[] {
@@ -120,7 +120,7 @@ function case_for(name: string) -> Case {
 function fetch_cases(url: string) -> Case[] {
     let res = baml.http.fetch(url);
     if (!res.ok()) {
-        throw "HTTP " + baml.unstable.string(res.status_code) + " from " + url;
+        throw `HTTP ${res.status_code} from ${url}`;
     };
     baml.json.from_string<Case[]>(res.text())
 }
