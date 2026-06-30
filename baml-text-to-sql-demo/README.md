@@ -88,10 +88,10 @@ export DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres
 
 `DATABASE_URL` points at the local Supabase from step 1 (or any Postgres). `OPENAI_API_KEY` (and any other secrets) arrive via Infisical at run time — see [Run](#run).
 
+> `pyproject.toml` installs the `baml_core` runtime from PyPI (`baml_core==0.13.0`).
 > The BAML CLI used during development is the local toolchain binary
-> (`~/baml/baml_language/target/debug/baml-cli generate --from baml_src`).
-> `pyproject.toml` installs `baml_core` editable from that same checkout — point
-> both at your release once BAML is published.
+> (`~/baml/baml_language/target/debug/baml-cli generate --from baml_src`) — swap it
+> for an installed `baml` once the CLI is published.
 
 ## Run
 

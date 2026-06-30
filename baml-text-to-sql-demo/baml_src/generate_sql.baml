@@ -47,6 +47,54 @@ function GenerateSQL(natural_language_query: string, schema: DatabaseSchema) -> 
     `
 }
 
+// Test of GenerateSQL itself — a live model call. Output is non-deterministic, so
+// we assert on invariants the function must always satisfy for this question and
+// schema, not on exact SQL text. Kept as a top-level `test` (not wrapped in a
+// `testset`) so it shows up in the playground alongside the other cases.
+test "GenerateSQL: users query against a simple schema" {
+    let schema = DatabaseSchema {
+        tables: [Table { schema_name: "public", table_name: "users", table_owner: "postgres" }],
+        columns: [
+            Column {
+                table_schema: "public",
+                table_name: "users",
+                column_name: "id",
+                data_type: "integer",
+                character_maximum_length: null,
+                numeric_precision: 32,
+                numeric_scale: 0,
+                is_nullable: "NO",
+                column_default: null,
+                is_primary_key: true,
+            },
+            Column {
+                table_schema: "public",
+                table_name: "users",
+                column_name: "email",
+                data_type: "text",
+                character_maximum_length: null,
+                numeric_precision: null,
+                numeric_scale: null,
+                is_nullable: "NO",
+                column_default: null,
+                is_primary_key: false,
+            },
+        ],
+        relationships: [],
+        indexes: [],
+        row_counts: [],
+    };
+
+    let r = GenerateSQL("List the email addresses of all users", schema);
+
+    // Read-only SELECT, references the only table available, sane confidence.
+    assert.is_true(is_select_query(r.sql));
+    assert.contains(r.sql.to_lower_case(), "users");
+    assert.is_true(r.tables_used.length() >= 1);
+    assert.is_true(r.confidence >= 0.0);
+    assert.is_true(r.confidence <= 1.0);
+}
+
 // Read-only safety gate, ported from the Mastra execution tool. Pure + offline-
 // testable: the workflow refuses to run anything that isn't a read. Allows a
 // leading CTE (`WITH … SELECT …`), which the model often produces for rankings.

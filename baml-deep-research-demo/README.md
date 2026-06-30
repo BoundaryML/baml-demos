@@ -51,7 +51,7 @@ The original degraded gracefully on transient failures; the port mirrors that:
 ## Files
 
 - `baml.toml` — package + Python generator config.
-- `pyproject.toml` — Python project; editable-links the local `baml_core` SDK.
+- `pyproject.toml` — Python project; depends on `baml_core==0.13.0` (PyPI).
 - `baml_src/clients.baml` — `Fast` / `Smart` LLM clients.
 - `baml_src/types.baml` — `SearchResult`, `Evaluation`, `Learning`, `ResearchData`.
 - `baml_src/search.baml` — `summarize_web`, `exa_search` (Exa POST + concurrent summarize).
@@ -64,13 +64,13 @@ The original degraded gracefully on transient failures; the port mirrors that:
 
 ## Run it
 
-> **Local SDK dependency:** `pyproject.toml` pins `baml_core` to a local editable path
-> (`/Users/sam/baml/baml_language/sdks/python`) and the commands below used the local debug
-> `baml-cli` at `/Users/sam/baml/baml_language/target/debug/baml-cli`. On another machine,
-> repoint both to your BAML checkout (or an installed `baml`/`baml_core`) before `uv sync`.
+> **Dependencies:** `pyproject.toml` installs the `baml_core` runtime from PyPI
+> (`baml_core==0.13.0`). The commands below used the local debug `baml-cli` at
+> `/Users/sam/baml/baml_language/target/debug/baml-cli`; repoint that to your BAML
+> checkout (or an installed `baml`) on another machine.
 
 ```bash
-# 1. Build the venv (editable-links the local baml_core SDK)
+# 1. Build the venv (installs baml_core==0.13.0 from PyPI)
 uv sync
 
 # 2. Generate the Python baml_sdk from baml_src/
