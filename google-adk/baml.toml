@@ -1,0 +1,9 @@
+[package]
+name = "baml_adk_expense"
+
+# Generate a typed Python (Pydantic v2) SDK at the demo root.
+# `baml generate` emits `./baml_sdk/` which `expense_agent/agent.py` imports.
+[generator.app]
+output_type = "python/pydantic"
+output_dir = "."
+naming_convention = "preserve-case"
