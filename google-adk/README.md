@@ -50,7 +50,8 @@ google-adk/
 ## Setup
 
 ```bash
-brew tap boundaryml/baml && brew install baml   # BAML CLI
+brew install boundaryml/tap/baml                 # BAML wrapper
+baml toolchain use canary                        # BAML CLI
 uv sync                                          # Python deps (google-adk, baml_core, …)
 baml generate                                    # emit ./baml_sdk/
 ```
