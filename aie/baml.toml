@@ -1,0 +1,10 @@
+[package]
+name = "aie"
+
+# [scripts]
+# dev = "-f main"
+
+[generator.my_client]
+output_type = "python/pydantic"
+output_dir = "./"
+naming_convention = "preserve-case"
