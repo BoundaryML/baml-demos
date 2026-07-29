@@ -20,8 +20,10 @@ class Bot(discord.Client):
                 loop = asyncio.get_event_loop()
                 try:
                     response = baml_sdk.respond(
-                        message.author.name,
-                        message.content,
+                        baml_sdk.DiscordMessage(
+                            from_user=message.author.name,
+                            content=message.content,
+                        ),
                         lambda: tasks.append(loop.create_task(message.delete())),
                         lambda update: tasks.append(loop.create_task(thread.send(update))),
                     )

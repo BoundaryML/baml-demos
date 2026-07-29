@@ -1,12 +1,17 @@
-function respond(username: string, message: string, delete_callback: () -> null throws never, send_update: (string) -> null throws never) -> string {
-    let response_type = decide_response(message);
+class DiscordMessage {
+    from_user: string,
+    content: string,
+}
+
+function respond(message: DiscordMessage, delete_callback: () -> null throws never, send_update: (string) -> null throws never) -> string {
+    let response_type = decide_response(message.content);
     match (response_type) {
         ResponseType.HelpfulResponse => {
             let turns = 0;
             let history = [];
             while (turns < 50) {
                 turns += 1;
-                match helpful_turn(username, message, history) {
+                match helpful_turn(message.from_user, message.content, history) {
                     let r: SendResponse => {
                         return r.message;
                     },
@@ -36,7 +41,7 @@ function respond(username: string, message: string, delete_callback: () -> null 
             }
             "ERROR: Timed out"
         },
-        ResponseType.RudeResponse => respond_rude(username, message),
+        ResponseType.RudeResponse => respond_rude(message.from_user, message.content),
         ResponseType.DeleteMessage => {
             delete_callback();
             "you can't say that"
