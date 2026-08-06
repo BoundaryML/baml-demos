@@ -14,7 +14,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "baml-bridge", specifier = ">=0.15.0" },
+    { name = "baml-bridge", specifier = "==0.15.1.dev2026073100" },
     { name = "baml-core", specifier = ">=0.13.0" },
     { name = "pydantic", specifier = ">=2.13.4" },
 ]
@@ -30,21 +30,21 @@ wheels = [
 
 [[package]]
 name = "baml-bridge"
-version = "0.15.0"
+version = "0.15.1.dev2026073100"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "protobuf" },
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a9/3d/75f3004e8e9be768082bb5f605ad4d07f094d7828ae6f21f1c1a04a4bbb1/baml_bridge-0.15.0-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:f2fa61bf0bb5e49d2bff8e5eaba944a6897ec729dc8c0b1f1890ccc39bddb0d3", size = 8117355, upload-time = "2026-07-14T08:41:21.616Z" },
-    { url = "https://files.pythonhosted.org/packages/ba/25/0c43aa90514e18197dae56e16b46859ed3b9de525942c08efe068ebded15/baml_bridge-0.15.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:dfb905e80d4da8a22f4664646f1ecc7b4f1c6608bda023724d0f8522db1a8234", size = 7778305, upload-time = "2026-07-14T08:41:24.12Z" },
-    { url = "https://files.pythonhosted.org/packages/38/be/c3208511bc52591fd4e4622d2a97404635d9c05c27e572bd28f42d16810c/baml_bridge-0.15.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:28808b8abf9e81bf3b4cced991f3821ceafab574df834e2a306f8d3c9fb7cdb3", size = 8331775, upload-time = "2026-07-14T08:41:27.009Z" },
-    { url = "https://files.pythonhosted.org/packages/eb/8b/42a4b722a3b7b316c078b854a3bab21eac7d4304a65da594b0ab8a7794ab/baml_bridge-0.15.0-cp310-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:06c4c7dc2cbd03e66fbe73139ca7e5acf4cb925001a1ad27eaabe1994f0d3495", size = 7788235, upload-time = "2026-07-14T08:41:30.398Z" },
-    { url = "https://files.pythonhosted.org/packages/bb/f1/52c1b612952d10d62ea355d02f56c26942bb5f4abd5ecc4a64973696b965/baml_bridge-0.15.0-cp310-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:c6ab2d4b4e75853d27e485e79a910911df6261b5cb9c368e9517fad332efadc3", size = 8001325, upload-time = "2026-07-14T08:41:32.899Z" },
-    { url = "https://files.pythonhosted.org/packages/a5/d9/4b0cb29eedfba6ed343d41d9ee511d39266e7421f4f7d8a72e890c83530d/baml_bridge-0.15.0-cp310-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:fc438867db3d7c8f6cb724e6822bfaceae1c4d794ed80c89ac43b18fb3d218e1", size = 8491161, upload-time = "2026-07-14T08:41:35.623Z" },
-    { url = "https://files.pythonhosted.org/packages/d7/b2/1e9113a564bf87420a12583d6770c351d0d78008dd498107d87b8d4464b9/baml_bridge-0.15.0-cp310-abi3-win_amd64.whl", hash = "sha256:a7b9c3e6080ec1b94668490578b6e17cc98ab0920bd2f01683abb5cc4f5fd14a", size = 8331306, upload-time = "2026-07-14T08:41:38.377Z" },
-    { url = "https://files.pythonhosted.org/packages/99/6f/77c596785b5478cb48be257c75a3cb9ef4d8a6a1f17a16d1ba89d0767bae/baml_bridge-0.15.0-cp310-abi3-win_arm64.whl", hash = "sha256:ac33da9a3a4379f0bebea8ac1c9960e885d176ff80053e37d344e99517a910f9", size = 8011142, upload-time = "2026-07-14T08:41:40.733Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/f2/adae54342efde56d192b7d1686d78281fd490ac605f882e9cbdf7fa89162/baml_bridge-0.15.1.dev2026073100-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:ed0cd531f82137309c01c6b7b8878634311af400062264097c7701b04d806635", size = 8969559, upload-time = "2026-08-01T08:29:03.33Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/7a/291feb4bec0e46f0cd7438498974898fd3ee3df9946b0935d759aa097a35/baml_bridge-0.15.1.dev2026073100-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:89dd218f1520f63da0efd1a337078410cf7113e1b66892c0cfe8321e0f39520b", size = 8602159, upload-time = "2026-08-01T08:29:05.345Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/de/f67c4c2edb9ebd0773c58f02fc605cbeefb2a11917ae42ec4233f2c03845/baml_bridge-0.15.1.dev2026073100-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:08f93cddda5b8f49452bfecdbcfff76e7b7a620887263e75452be67d616cc76e", size = 9177556, upload-time = "2026-08-01T08:29:07.204Z" },
+    { url = "https://files.pythonhosted.org/packages/0e/5d/a1f2f36721420aa0e95a5a42775db21799c210465df2260fa5e467330581/baml_bridge-0.15.1.dev2026073100-cp310-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:eb3dbe10d5e87d0629b2877af58e95a3262aaa4ff2831cce6e4ac1d0ddbab73f", size = 8599282, upload-time = "2026-08-01T08:29:09.186Z" },
+    { url = "https://files.pythonhosted.org/packages/87/d1/42e66a310b762d6c4dc21b91538cfc098bf8f09e11181459140ef9ccb579/baml_bridge-0.15.1.dev2026073100-cp310-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:22b89a52b7daea4a31108a3f162abe5f62fff74121990154eafe654d87f53c6d", size = 8805797, upload-time = "2026-08-01T08:29:11.261Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/d5/eaa54590a879c148905729ac75ad51cf3095a6271c3eae50fb0d833f8c01/baml_bridge-0.15.1.dev2026073100-cp310-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:a4391e0fc358ca81ed64e59a4f840ade228df9476b843935c75ac25f5706ef2f", size = 9332002, upload-time = "2026-08-01T08:29:13.3Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/04/68420d75cadeac63b1fe391f336297a5476fc7f6edb2f09178b061564679/baml_bridge-0.15.1.dev2026073100-cp310-abi3-win_amd64.whl", hash = "sha256:619eee51121cedb5f7b559a04b7edfa08c3d30f9258a8ced8af8a60cfdd1f8e8", size = 9187548, upload-time = "2026-08-01T08:29:15.155Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/bf/3d48d320093bc8df1ce11c146792759e134d2e104d961aeaa8e7ac4a57d5/baml_bridge-0.15.1.dev2026073100-cp310-abi3-win_arm64.whl", hash = "sha256:fbdc0d394b699a19ed4d97e0ecb35ded84cdeb451d797d18f6d1477e376bbcca", size = 8852147, upload-time = "2026-08-01T08:29:17.019Z" },
 ]
 
 [[package]]
