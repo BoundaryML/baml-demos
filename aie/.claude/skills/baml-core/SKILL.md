@@ -13,6 +13,7 @@ BAML is a statically-typed, expression-oriented *language* — TypeScript with `
 brew install baml                # CLI binary: `baml`
 
 baml init                        # new project (baml.toml + baml_src/)
+baml help <command>              # CLI options and examples
 baml describe baml.json          # ← THE reference for any module/type/method/signature/keyword
 baml describe Array --budget 120 #   (Array, String, Map, assert, match, patterns, spawn, python, ...)
                                  #   ends with "… N more lines"? re-run with `--budget <N>`

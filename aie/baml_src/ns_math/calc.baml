@@ -8,12 +8,9 @@
 // integer division and raises DivisionByZeroError on a zero divisor.
 
 // owners: vaibcode
-function calculate(input: string) -> int throws CalcError {
+function calculate(input: string) -> int {
     let parser = Parser { tokens: tokenize(input), pos: 0 };
-    let value = parser.parse_expr() catch (e) {
-        DivisionByZeroError => -1
-        DivisionByZeroError2 => -1
-    };
+    let value = parser.parse_expr();
     if (parser.pos < parser.tokens.length()) {
         throw CalcError { message: `Unexpected token '${parser.tokens.at(parser.pos) ?? ""}' at position ${parser.pos}` }
     }

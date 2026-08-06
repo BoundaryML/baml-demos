@@ -22,8 +22,7 @@ function retry<T>(max_attempts: int, f: () -> T) -> T {
                     throw e
                 };
                 baml.sys.sleep(baml.time.Duration.from_milliseconds(1000)) catch (e) {
-                    _ => {
-                    }
+                    _ => {}
                 }
             }
         }
@@ -57,8 +56,7 @@ function process_url(url: string) -> ScrapeResult throws never {
     };
     log.info(`processing ${url} with delay ${1000 + counter}`);
     baml.sys.sleep(baml.time.Duration.from_milliseconds(1000 + counter)) catch (e) {
-        _ => {
-        }
+        _ => {}
     };
     ScrapeResult { url: url, content: `my content for ${url}` }
 }
@@ -66,14 +64,9 @@ function process_url(url: string) -> ScrapeResult throws never {
 function scrape_urls(urls: string[]) -> void {
     let group = baml.spawn.TaskGroup.new(5);
 
-    let results = urls
-        .map(
-            (url) -> {
-                spawn `scrape:${url}` with baml.spawn.options(group=group) {
-                    process_url(url)
-                }
-            },
-        );
+    let results = urls.map((url) -> {
+        spawn { process_url(url) }
+    });
 
     baml.sys.sleep(baml.time.Duration.from_milliseconds(1400));
     results[1].cancel();

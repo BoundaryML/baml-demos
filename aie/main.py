@@ -79,9 +79,15 @@ class Decimal:
 def call_me():
     # print(root.hello.d(Demo("scott")))
     def demo() -> str:
-        raise Demo("scott")
+        obj = Demo("this is a bad error")
+        print("id:", id(obj))
+        raise obj
     o = root.hello.PythonObject(say_hi=demo)
-    print(root.hello.call_me(o))
+
+    try:
+        print(root.hello.call_me(o))
+    except Demo as e:
+        print("Caught exception:", e.name, "id:", id(e))
 
 
 

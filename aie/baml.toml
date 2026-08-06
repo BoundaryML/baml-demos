@@ -4,6 +4,17 @@ name = "aie"
 # [scripts]
 # dev = "-f main"
 
+# Tests that need a human at the keyboard (baml.io.input) are named `.../manual`.
+# `baml test` skips them; `baml test --profile manual` runs only those.
+[test]
+default = "auto"
+
+[test.profiles.auto]
+args = ["-x", "*/manual"]
+
+[test.profiles.manual]
+args = ["-i", "*/manual"]
+
 [generator.my_client]
 output_type = "python/pydantic"
 output_dir = "./"

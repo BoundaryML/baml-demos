@@ -597,17 +597,13 @@ class Line {
     eof: bool,
 }
 
-// Read one line from the terminal (inherited stdin). eof=true at end of input.
 function read_line() -> Line {
-    let out = baml.sys.shell("IFS= read -r __l; rc=$?; printf '%s' \"$__l\"; exit $rc", null);
-    Line { text: out.stdout.to_string(), eof: out.exit_code != 0 }
+    let text = baml.io.input(null);
+    Line { text: text, eof: false }
 }
 
-// Write directly to the controlling terminal so output streams live
-// (baml captures normal stdout, so we bypass it via /dev/tty).
 function say(text: string) -> void {
-    let opts = baml.sys.ProcessOptions { cwd: null, env: null, timeout_ms: null, stdin: text };
-    baml.sys.shell("cat > /dev/tty 2>/dev/null", opts);
+    baml.io.print(text);
 }
 
 function banner() -> string {

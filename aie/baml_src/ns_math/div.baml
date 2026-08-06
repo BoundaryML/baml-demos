@@ -1,6 +1,6 @@
 function divide(a: int, b: int) -> int {
     if (b == 0) {
-        throw DivisionByZeroError2 { numerator: a }
+        throw DivisionByZeroError { numerator: a }
     }
     return a / b;
 }

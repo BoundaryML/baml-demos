@@ -1,14 +1,10 @@
 function with_timeout<T, E>(millis: int, f: () -> T throws E) -> T {
-    let work = spawn {
-        f()
-    };
-    let timer = spawn { 
+    let work = spawn { f() };
+    let timer = spawn {
         baml.sys.sleep(baml.time.Duration.from_milliseconds(millis));
-        work.cancel();
-        throw TimeoutError { message: `Operation timed out after ${millis} milliseconds` };
     };
 
-    let result = baml.future.race<T, TimeoutError | E>([work, timer]);
+    let result = baml.future.race<T, E>([work, timer]);
     await result
 }
 
