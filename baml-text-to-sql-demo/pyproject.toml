@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Natural-language to SQL over Postgres — Mastra demo ported to BAML via the Python bridge."
 requires-python = ">=3.10"
 dependencies = [
-    "baml_core==0.13.0",
+    "baml_bridge==0.15.1.dev2026081001",
     "pydantic>=2",
     "psycopg2-binary>=2.9",
     "streamlit>=1.40",

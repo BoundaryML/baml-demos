@@ -4,145 +4,46 @@ function add(a: int, b: int) -> int {
     a + b
 }
 
-// Using the new OpenAI Responses API for enhanced formatting
-client<llm> CustomGPT5 {
-    provider: openai-responses,
-    options: {
-        model: "gpt-5",
-        api_key: env.TEMP_KEY,
-    },
-}
+client CustomGPT5 = openai.OpenAiClient.new(
+    model = "gpt-5",
+    api_key_env = "TEMP_KEY",
+);
 
-client<llm> CustomGPT5Mini {
-    provider: openai-responses,
-    retry_policy: Exponential,
-    options: {
-        model: "gpt-5-mini",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client CustomGPT5Mini = ai.clients.Retry.new(
+    inner = openai.OpenAiClient.new(
+        model = "gpt-5-mini",
+    ),
+    max_attempts = 2,
+);
 
-// Openai with chat completion
-client<llm> CustomGPT5Chat {
-    provider: openai,
-    options: {
-        model: "gpt-5",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client CustomGPT5Chat = openai.OpenAiClient.new(
+    model = "gpt-5",
+);
 
-// Latest Anthropic Claude 4 models
-client<llm> CustomOpus4 {
-    provider: anthropic,
-    options: {
-        model: "claude-opus-4-1-20250805",
-        api_key: env.ANTHROPIC_API_KEY,
-    },
-}
+client CustomOpus4 = anthropic.AnthropicClient.new(
+    model = "claude-opus-4-1-20250805",
+);
 
-client<llm> CustomSonnet4 {
-    provider: anthropic,
-    options: {
-        model: "claude-sonnet-4-20250514",
-        api_key: env.ANTHROPIC_API_KEY,
-    },
-}
+client CustomSonnet4 = anthropic.AnthropicClient.new(
+    model = "claude-sonnet-4-20250514",
+);
 
-client<llm> CustomHaiku {
-    provider: anthropic,
-    options: {
-        model: "claude-haiku-4-5",
-        api_key: env.ANTHROPIC_API_KEY,
-    },
-}
+client CustomHaiku = anthropic.AnthropicClient.new(
+    model = "claude-haiku-4-5",
+);
 
 // Example Google AI client (uncomment to use)
-// client<llm> CustomGemini {
-//   provider google-ai
-//   options {
-//     model "gemini-2.5-pro"
-//     api_key env.GOOGLE_API_KEY
-//   }
-// }
+// client CustomGemini = google.GoogleClient.new(
+//     model = "gemini-2.5-pro",
+// );
 
-// Example AWS Bedrock client (uncomment to use)
-// client<llm> CustomBedrock {
-//   provider aws-bedrock
-//   options {
-//     model "anthropic.claude-sonnet-4-20250514-v1:0"
-//     region "us-east-1"
-//     // AWS credentials are auto-detected from env vars
-//   }
-// }
+// This will alternate between the two clients.
+client CustomFast = ai.clients.RoundRobin.new([CustomGPT5Mini, CustomHaiku]);
 
-// Example Azure OpenAI client (uncomment to use)
-// client<llm> CustomAzure {
-//   provider azure-openai
-//   options {
-//     model "gpt-5"
-//     api_key env.AZURE_OPENAI_API_KEY
-//     base_url "https://MY_RESOURCE_NAME.openai.azure.com/openai/deployments/MY_DEPLOYMENT_ID"
-//     api_version "2024-10-01-preview"
-//   }
-// }
-
-// Example Vertex AI client (uncomment to use)
-// client<llm> CustomVertex {
-//   provider vertex-ai
-//   options {
-//     model "gemini-2.5-pro"
-//     location "us-central1"
-//     // Uses Google Cloud Application Default Credentials
-//   }
-// }
-
-// Example Ollama client for local models (uncomment to use)
-// client<llm> CustomOllama {
-//   provider openai-generic
-//   options {
-//     base_url "http://localhost:11434/v1"
-//     model "llama4"
-//     default_role "user" // Most local models prefer the user role
-//     // No API key needed for local Ollama
-//   }
-// }
-
-// https://docs.boundaryml.com/docs/snippets/clients/round-robin
-client<llm> CustomFast {
-    provider: round-robin,
-    options: {
-        // This will alternate between the two clients
-        strategy: [CustomGPT5Mini, CustomHaiku],
-    },
-}
-
-// https://docs.boundaryml.com/docs/snippets/clients/fallback
-client<llm> OpenaiFallback {
-    provider: fallback,
-    options: {
-        // This will try the clients in order until one succeeds
-        strategy: [CustomGPT5Mini, CustomGPT5],
-    },
-}
-
-// https://docs.boundaryml.com/docs/snippets/clients/retry
-retry_policy Constant {
-    max_retries: 3,
-    strategy: {
-        type: constant_delay,
-        delay_ms: 200,
-    },
-}
-
-retry_policy Exponential {
-    max_retries: 2,
-    strategy: {
-        type: exponential_backoff,
-        delay_ms: 300,
-        multiplier: 1.5,
-        max_delay_ms: 10000,
-    },
-}
+// This will try the clients in order until one succeeds.
+client OpenaiFallback = ai.clients.Fallback {
+    members: [CustomGPT5Mini, CustomGPT5],
+};
 
 function will_double(x: int) -> int {
     x * 2

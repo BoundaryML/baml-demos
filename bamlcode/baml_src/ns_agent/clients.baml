@@ -1,23 +1,42 @@
 // LLM clients for bamlcode.
 //
-// Default brain is Anthropic Claude (set ANTHROPIC_API_KEY).
-// To use OpenAI instead, swap `client: Brain` for `client: BrainOpenAI`
-// in baml_src/ns_agent/agent.baml (and set OPENAI_API_KEY).
+// Credentials are resolved when the selected client makes a request.
 
-client<llm> Brain {
-    provider: anthropic,
-    options: {
-        model: "claude-sonnet-4-6",
-        api_key: env.ANTHROPIC_API_KEY,
-        max_tokens: 4096,
-    },
+client Brain = anthropic.AnthropicClient.new(
+    model = "claude-sonnet-4-6",
+    max_tokens = 4096,
+);
+
+client BrainOpenAI = openai.OpenAiClient.new(
+    model = "gpt-4o",
+);
+
+function resolve_client(provider: string) -> ai.Client {
+    match (provider.trim().to_lower_case()) {
+        "anthropic" => Brain,
+        "openai" => BrainOpenAI,
+        _ => {
+            throw baml.errors.InvalidArgument {
+                message: `unknown provider "${provider}"; expected anthropic or openai`,
+            }
+        },
+    }
 }
 
-client<llm> BrainOpenAI {
-    provider: openai,
-    options: {
-        model: "gpt-4o",
-        api_key: env.OPENAI_API_KEY,
-        max_tokens: 4096,
-    },
+function require_provider_credentials(provider: string) -> null {
+    let key_name = match (provider.trim().to_lower_case()) {
+        "anthropic" => "ANTHROPIC_API_KEY",
+        "openai" => "OPENAI_API_KEY",
+        _ => {
+            throw baml.errors.InvalidArgument {
+                message: `unknown provider "${provider}"; expected anthropic or openai`,
+            }
+        },
+    };
+    if (baml.env.get(key_name) == null) {
+        throw baml.errors.InvalidArgument {
+            message: `${key_name} is not set; export it or choose another provider`,
+        }
+    };
+    null
 }

@@ -5,15 +5,15 @@
 
 function parse_expense(text: string) -> Expense {
     client: ExpenseModel
-    prompt: #"
+    prompt: `
         Extract exactly one structured expense record from this raw expense
         note, written by an employee in a hurry:
 
-        {{ text }}
+        ${text}
 
         Expand abbreviations ("ubr" -> "Uber"), pick the closest category,
         and keep anything else a reviewer would care about in notes.
 
-        {{ ctx.output_format }}
-    "#
+        ${ctx.output_format}
+    `
 }

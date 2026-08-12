@@ -1,6 +1,9 @@
 [package]
 name = "baml_demo"
 
+[toolchain]
+version = "0.15.1-nightly.20260810.b"
+
 # [scripts]
 # dev = "-f main"
 

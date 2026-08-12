@@ -51,7 +51,7 @@ The original degraded gracefully on transient failures; the port mirrors that:
 ## Files
 
 - `baml.toml` — package + Python generator config.
-- `pyproject.toml` — Python project; depends on `baml_core==0.13.0` (PyPI).
+- `pyproject.toml` — Python project; depends on `baml_bridge==0.15.1.dev2026081001` (PyPI).
 - `baml_src/clients.baml` — `Fast` / `Smart` LLM clients.
 - `baml_src/types.baml` — `SearchResult`, `Evaluation`, `Learning`, `ResearchData`.
 - `baml_src/search.baml` — `summarize_web`, `exa_search` (Exa POST + concurrent summarize).
@@ -64,17 +64,16 @@ The original degraded gracefully on transient failures; the port mirrors that:
 
 ## Run it
 
-> **Dependencies:** `pyproject.toml` installs the `baml_core` runtime from PyPI
-> (`baml_core==0.13.0`). The commands below used the local debug `baml-cli` at
-> `/Users/sam/baml/baml_language/target/debug/baml-cli`; repoint that to your BAML
-> checkout (or an installed `baml`) on another machine.
+> **Dependencies:** `pyproject.toml` installs the `baml_bridge` runtime from PyPI
+> (`baml_bridge==0.15.1.dev2026081001`). `baml.toml` pins the matching BAML
+> nightly toolchain.
 
 ```bash
-# 1. Build the venv (installs baml_core==0.13.0 from PyPI)
+# 1. Build the venv (installs baml_bridge==0.15.1.dev2026081001 from PyPI)
 uv sync
 
 # 2. Generate the Python baml_sdk from baml_src/
-baml-cli generate
+baml generate
 
 # 3. Provide keys
 cp .env.example .env   # then fill in OPENAI_API_KEY and EXA_API_KEY
@@ -94,13 +93,9 @@ Both front ends drive the same BAML functions. They ask for a topic, run the two
 ## Development loop
 
 ```bash
-baml-cli check     # compile-check all baml
-baml-cli test      # run the pure (no-LLM) test blocks
-baml-cli generate  # regenerate baml_sdk/ after baml changes
+baml check     # compile-check all baml
+baml test      # run the pure (no-LLM) test blocks
+baml generate  # regenerate baml_sdk/ after baml changes
 ```
-
-> The exact `baml-cli` invocations in this repo used the local debug binary at
-> `/Users/sam/baml/baml_language/target/debug/baml-cli` with
-> `--from /Users/sam/work-repos/agent-demos/baml-deep-research-demo`.
 
 The `test` blocks call **no** LLM functions — they exercise pure BAML logic (follow-up dedup, merge, URL dedup) on literal data, so they run offline with no API keys.

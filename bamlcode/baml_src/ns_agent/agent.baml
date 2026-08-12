@@ -1,27 +1,12 @@
 // bamlcode — a tiny Claude Code, written entirely in BAML.
 //
-// An agentic coding CLI: it reasons about your task, then takes ONE tool action
-// at a time (read / write / edit files, list dirs, run shell commands), feeds the
-// result back to the model, and loops until it answers you.
+// An agentic coding CLI built on BAML's ai.Agent runner.
 //
 //   Interactive REPL:   baml run agent.main
 //   One-shot:           baml run agent.ask --json-args '{"task": "summarize this repo"}'
 
-// ---------------------------------------------------------------------------
-// The model's decision for a single step.
-//
-// `action` selects a tool; the matching fields below carry its arguments.
-// Only fill the fields relevant to the chosen action.
-// ---------------------------------------------------------------------------
-class Step {
-    thought: string,
-    action: "read_file" | "write_file" | "edit_file" | "list_dir" | "run_bash" | "respond",
-    path: string?,
-    content: string?,
-    old_str: string?,
-    new_str: string?,
-    command: string?,
-    message: string?,
+class AgentAnswer {
+    message: string,
 }
 
 class Turn {
@@ -41,47 +26,39 @@ class Interrupt {
     queued: string,
 }
 
-// ---------------------------------------------------------------------------
-// The brain: given the running transcript, decide the next single step.
-// ---------------------------------------------------------------------------
-function decide(transcript: string) -> Step {
+function code(history: string, task: string) -> AgentAnswer {
     client: Brain
-    prompt: #"
-        You are bamlcode, a CLI coding agent (think "Claude Code") operating inside the
-        user's current working directory. You complete software tasks by taking ONE tool
-        action at a time. After each action you will see its result and decide what to do next.
-
-        Available actions (set `action` and fill ONLY the matching fields):
-          - read_file   → read a file.                fields: path
-          - write_file  → create or overwrite a file. fields: path, content
-          - edit_file   → replace exact text once.    fields: path, old_str, new_str
-          - list_dir    → list a directory.           fields: path
-          - run_bash    → run a /bin/sh command.      fields: command
-          - respond     → talk to the user (you are done, or you need their input). fields: message
+    tools: [read_file, write_file, edit_file, list_dir, run_bash]
+    prompt: `
+        You are bamlcode, a CLI coding agent operating inside the user's current
+        working directory. Complete the user's task with the available tools.
 
         Operating rules:
-          - Inspect before you change: use list_dir / read_file before write_file / edit_file.
+          - Inspect relevant files before changing them.
           - edit_file replaces the FIRST exact occurrence of old_str, so make old_str unique
             and copy it byte-for-byte from the file (including whitespace).
           - Use run_bash for things tools don't cover (grep, running tests, git, mkdir, etc.).
-          - Keep `thought` to one short sentence.
-          - When the task is complete, or you need a decision from the user, use `respond`.
-          - Do NOT repeat an action that already succeeded; build on prior results.
+          - Parallelize only independent read-only calls. Run dependent or mutating calls in order.
+          - Do not repeat a tool call that already succeeded.
+          - Return a concise final answer when the task is complete or user input is required.
 
-        Transcript so far (USER messages, your THOUGHT/ACTION/RESULT trail):
+        Previous conversation and tool history:
         ----------------------------------------------------------------------
-        {{ transcript }}
+        ${history}
         ----------------------------------------------------------------------
 
-        Decide the single next step.
-        {{ ctx.output_format }}
-    "#
+        Current task:
+        ${task}
+
+        ${ctx.output_format}
+    `
 }
 
 // ---------------------------------------------------------------------------
 // Tools — each returns a plain-text result the model can read.
 // ---------------------------------------------------------------------------
-function tool_read_file(path: string) -> string {
+/// Read a UTF-8 text file and return its contents with line numbers.
+function read_file(path: string) -> string {
     if (path.trim().length() == 0) {
         return "ERROR: read_file needs a `path`.";
     };
@@ -93,7 +70,8 @@ function tool_read_file(path: string) -> string {
     "Contents of " + path + ":\n" + numbered
 }
 
-function tool_write_file(path: string, content: string) -> string {
+/// Create or overwrite a UTF-8 text file.
+function write_file(path: string, content: string) -> string {
     if (path.trim().length() == 0) {
         return "ERROR: write_file needs a `path`.";
     };
@@ -101,7 +79,8 @@ function tool_write_file(path: string, content: string) -> string {
     `Wrote ${n} bytes to ${path}.`
 }
 
-function tool_edit_file(path: string, old_str: string, new_str: string) -> string {
+/// Replace the first exact occurrence of old_str in a UTF-8 text file.
+function edit_file(path: string, old_str: string, new_str: string) -> string {
     if (!baml.fs.exists(path)) {
         return "ERROR: no such file: " + path;
     };
@@ -114,7 +93,8 @@ function tool_edit_file(path: string, old_str: string, new_str: string) -> strin
     "Edited " + path + " (replaced 1 occurrence)."
 }
 
-function tool_list_dir(path: string) -> string {
+/// List the immediate entries in a directory. Use "." for the current directory.
+function list_dir(path: string) -> string {
     let dir = if (path.trim().length() == 0) {
         "."
     } else {
@@ -139,7 +119,8 @@ function tool_list_dir(path: string) -> string {
     "Contents of " + dir + ":\n" + lines.join("\n")
 }
 
-function tool_run_bash(command: string) -> string {
+/// Run a shell command in the current working directory and return its output.
+function run_bash(command: string) -> string {
     if (command.trim().length() == 0) {
         return "ERROR: run_bash needs a `command`.";
     };
@@ -159,118 +140,120 @@ function tool_run_bash(command: string) -> string {
     }
 }
 
-// Dispatch a decided Step to its tool, returning the tool result text.
-function execute(step: Step) -> string {
-    match (step.action) {
-        "read_file" => tool_read_file(step.path ?? ""),
-        "write_file" => tool_write_file(step.path ?? "", step.content ?? ""),
-        "edit_file" => tool_edit_file(step.path ?? "", step.old_str ?? "", step.new_str ?? ""),
-        "list_dir" => tool_list_dir(step.path ?? ""),
-        "run_bash" => tool_run_bash(step.command ?? ""),
-        "respond" => step.message ?? "",
+function tool_output(output: string) -> string {
+    baml.json.from_string<string>(output) catch_all (e) {
+        _ => output
     }
 }
 
-// Convenience constructors (handy in tests and host code).
-function respond_step(message: string) -> Step {
-    Step {
-        thought: "",
-        action: "respond",
-        path: null,
-        content: null,
-        old_str: null,
-        new_str: null,
-        command: null,
-        message: message,
+function json_text(value: map<string, unknown>) -> string {
+    baml.json.stringify(baml.json.to_json(value)) catch_all (e) {
+        _ => "{}"
     }
 }
 
-function bash_step(command: string) -> Step {
-    Step {
-        thought: "",
-        action: "run_bash",
-        path: null,
-        content: null,
-        old_str: null,
-        new_str: null,
-        command: command,
-        message: null,
-    }
+function describe_tool(name: string, args: map<string, unknown>) -> string {
+    `${name} ${json_text(args)}`
 }
 
-// A short, human-readable label for a step's tool call.
-function describe_call(step: Step) -> string {
-    match (step.action) {
-        "read_file" => "read " + (step.path ?? "?"),
-        "write_file" => {
-            `write ${step.path ?? "?"} (${(step.content ?? "").length()} chars)`
-        },
-        "edit_file" => "edit " + (step.path ?? "?"),
-        "list_dir" => "ls " + (step.path ?? "."),
-        "run_bash" => "$ " + (step.command ?? "?"),
-        "respond" => "respond",
-    }
-}
-
-// ---------------------------------------------------------------------------
-// The agent loop for one user turn: decide → act → observe, until `respond`.
-// Streams progress to the terminal and returns the answer + updated transcript.
-// ---------------------------------------------------------------------------
-function run_turn(history: string, user_msg: string) -> Turn {
-    let transcript = history + "\nUSER: " + user_msg + "\n";
-    let steps = 0;
-    let answer = "";
-    let max_steps = 30;
-
-    while (steps < max_steps) {
-        // Pure agent loop. Interruption is handled concurrently by the
-        // supervisor that spawns this turn (see run_supervised), which can
-        // cancel() the whole task mid-step — no in-loop polling needed.
-        steps = steps + 1;
-        let step = decide(transcript);
-
-        if (step.action == "respond") {
-            answer = step.message ?? "";
-            say("\n" + style_assistant(answer) + "\n");
-            transcript = transcript + "ASSISTANT: " + answer + "\n";
-            return Turn {
-                answer: answer,
-                transcript: transcript,
-                steps: steps,
-                interrupted: false,
-                queued: [],
+function render_agent_event(event: ai.events.Event) -> null {
+    if let message: ai.events.AssistantMessage = event {
+        for (let block in message.content) {
+            if let reasoning: ai.content.Reasoning = block {
+                say("  " + dim(reasoning.summary) + "\n");
             };
-        };
+        }
+    } else if let request: ai.events.ToolRequested = event {
+        say("  " + arrow(describe_tool(request.name, request.args)) + "\n");
+    } else if let completed: ai.events.ToolCompleted = event {
+        say(style_result(clip(tool_output(completed.output), 1200)) + "\n");
+    } else if let failed: ai.events.ToolFailed = event {
+        say(style_result("ERROR: " + failed.message) + "\n");
+    };
+    null
+}
 
-        let call = describe_call(step);
-        say("  " + dim(step.thought) + "\n");
-        say("  " + arrow(call) + "\n");
-
-        let result = execute(step);
-        say(style_result(clip(result, 1200)) + "\n");
-
-        transcript
-            = transcript
-                + "[THOUGHT] "
-                + step.thought
-                + "\n"
-                + "[ACTION] "
-                + call
-                + "\n"
-                + "[RESULT]\n"
-                + clip(result, 6000)
-                + "\n";
+function on_agent_event(event: ai.events.Event) -> null throws never {
+    render_agent_event(event) catch_all (e) {
+        _ => null
     }
+}
 
-    answer = `(stopped after ${max_steps} steps without finishing)`;
-    say("\n" + style_assistant(answer) + "\n");
+function events_transcript(events: ai.events.Event[]) -> string {
+    let lines: string[] = [];
+    for (let event in events) {
+        if let message: ai.events.AssistantMessage = event {
+            for (let block in message.content) {
+                if let reasoning: ai.content.Reasoning = block {
+                    lines.push("[THOUGHT] " + reasoning.summary);
+                };
+            }
+        } else if let request: ai.events.ToolRequested = event {
+            lines.push("[ACTION] " + describe_tool(request.name, request.args));
+        } else if let completed: ai.events.ToolCompleted = event {
+            lines.push("[RESULT]\n" + clip(tool_output(completed.output), 6000));
+        } else if let failed: ai.events.ToolFailed = event {
+            lines.push("[TOOL ERROR] " + failed.message);
+        } else if let feedback: ai.events.UserMessage = event {
+            lines.push("[SYSTEM FEEDBACK] " + feedback.content);
+        };
+    }
+    if (lines.length() == 0) {
+        ""
+    } else {
+        lines.join("\n") + "\n"
+    }
+}
+
+function agent_steps(events: ai.events.Event[]) -> int {
+    let model_turns = 0;
+    let repair_requests = 0;
+    for (let event in events) {
+        if (event is ai.events.AssistantMessage) {
+            model_turns += 1;
+        } else if (event is ai.events.UserMessage) {
+            repair_requests += 1;
+        };
+    }
+    model_turns - repair_requests
+}
+
+function turn_from_result(
+    history: string,
+    user_msg: string,
+    result: ai.RunResult<AgentAnswer>,
+) -> Turn {
+    let answer = result.value.message;
     Turn {
         answer: answer,
-        transcript: transcript + "ASSISTANT: " + answer + "\n",
-        steps: steps,
+        transcript: history
+            + "\nUSER: "
+            + user_msg
+            + "\n"
+            + events_transcript(result.journal.entries())
+            + "ASSISTANT: "
+            + answer
+            + "\n",
+        steps: agent_steps(result.journal.entries()),
         interrupted: false,
         queued: [],
     }
+}
+
+function run_turn(history: string, user_msg: string, provider: string = "anthropic") -> Turn {
+    let selected = resolve_client(provider);
+    say(`  working with ${selected.id()}...\n`);
+    require_provider_credentials(provider);
+    let runner = ai.Agent<AgentAnswer>.new(
+        max_steps = 30,
+        client = selected,
+        tool_errors = ai.tools.ErrorMode.Report,
+        on_event = on_agent_event,
+    );
+    let result = runner.run(code@spec(history = history, task = user_msg));
+    let turn = turn_from_result(history, user_msg, result);
+    say("\n" + style_assistant(turn.answer) + "\n");
+    turn
 }
 
 // Build the Turn returned when a turn is cancelled, and tell the user.
@@ -313,10 +296,8 @@ function classify_interrupt(raw: string) -> Interrupt {
 // while we poll stdin. Pressing esc + enter cancels the future *mid-step* —
 // even during an in-flight LLM call; any other line queues to run after the
 // turn (returned on Turn.queued) without disturbing it.
-function run_supervised(history: string, msg: string) -> Turn {
-    let fut = spawn {
-        run_turn(history, msg)
-    };
+function run_supervised(history: string, msg: string, provider: string = "anthropic") -> Turn {
+    let fut = spawn { run_turn(history, msg, provider = provider) };
 
     let cancelled = false;
     let queued: string[] = [];
@@ -334,11 +315,9 @@ function run_supervised(history: string, msg: string) -> Turn {
                 queued.push(probe.queued);
                 say(
                     "\n  "
-                        + root
-                            .ansi
-                            .yellow(
-                                `✚ queued for after this turn (${queued.length()} waiting): ${probe.queued}`,
-                            )
+                        + root.ansi.yellow(
+                            `✚ queued for after this turn (${queued.length()} waiting): ${probe.queued}`,
+                        )
                         + "\n",
                 );
             };
@@ -348,13 +327,13 @@ function run_supervised(history: string, msg: string) -> Turn {
     let turn = if (cancelled) {
         interrupt_turn(history, 0)
     } else {
-        (
-            await fut
-        ) catch (e) {
+        (await fut) catch_all (e) {
             _ => {
+                let message = e.to_string();
+                say("\n" + root.ansi.red("ERROR: " + message) + "\n");
                 Turn {
-                    answer: "(the turn failed — see the error above)",
-                    transcript: history + "\n[turn errored]\n",
+                    answer: "ERROR: " + message,
+                    transcript: history + "\n[turn errored] " + message + "\n",
                     steps: 0,
                     interrupted: false,
                     queued: [],
@@ -381,8 +360,10 @@ function run_supervised(history: string, msg: string) -> Turn {
 // Stage messages with /queue, then run them in order. (You can also type-ahead
 // while a turn runs — the terminal buffers your keystrokes, and the next
 // read_line picks each line up as its own turn. No queue file involved.)
-function main() -> string {
+function main(provider: string = "anthropic") -> string {
+    let selected = resolve_client(provider);
     say(banner());
+    say(`  provider: ${selected.id()}\n`);
     let history = "";
     let queue: string[] = [];
     let running = true;
@@ -412,21 +393,21 @@ function main() -> string {
                 if (queue.length() == 0) {
                     say("  (nothing queued)\n");
                 } else {
-                    history = run_queue(history, queue);
+                    history = run_queue(history, queue, provider = provider);
                     queue = [];
                 };
             } else {
                 // Run the typed task now, then drain anything staged with /queue
                 // or typed while it ran. (Press esc + enter mid-turn to cancel;
                 //  any other typed line queues to run after the turn.)
-                let turn = run_supervised(history, msg);
+                let turn = run_supervised(history, msg, provider = provider);
                 history = turn.transcript;
                 for (let q in turn.queued) {
                     queue.push(q);
                 }
                 // If the user cancelled, leave the staged queue for later.
                 if (!turn.interrupted && queue.length() > 0) {
-                    history = run_queue(history, queue);
+                    history = run_queue(history, queue, provider = provider);
                     queue = [];
                 };
             };
@@ -439,14 +420,14 @@ function main() -> string {
 
 // Run every queued message in order, threading history through each turn.
 // Lines typed while a queued turn runs join the back of the same batch.
-function run_queue(history: string, queue: string[]) -> string {
+function run_queue(history: string, queue: string[], provider: string = "anthropic") -> string {
     let h = history;
     let i = 0;
     while (i < queue.length()) {
         let m = queue[i];
         i = i + 1;
         say(root.ansi.magenta(`\n◆ queued (${i}/${queue.length()}) › ${m}`) + "\n");
-        let t = run_supervised(h, m);
+        let t = run_supervised(h, m, provider = provider);
         h = t.transcript;
         for (let q in t.queued) {
             queue.push(q);
@@ -462,8 +443,8 @@ function run_queue(history: string, queue: string[]) -> string {
 
 // One-shot mode for scripting/tests. Returns just the final answer.
 // baml run agent.ask --json-args '{"task": "..."}'
-function ask(task: string) -> string {
-    let turn = run_turn("", task);
+function ask(task: string, provider: string = "anthropic") -> string {
+    let turn = run_turn("", task, provider = provider);
     turn.answer
 }
 
@@ -523,20 +504,22 @@ function read_line() -> Line {
     Line { text: out.stdout.to_string(), eof: out.exit_code != 0 }
 }
 
-// Write directly to the controlling terminal so output streams live
-// (baml captures normal stdout, so we bypass it via /dev/tty).
+// Write directly to the controlling terminal when available. Fall back to
+// BAML's flushed stdout for non-TTY environments.
 function say(text: string) -> void {
     let opts = baml.sys.ProcessOptions { cwd: null, env: null, timeout_ms: null, stdin: text };
-    baml.sys.shell("cat > /dev/tty 2>/dev/null", opts);
+    let out = baml.sys.shell("cat > /dev/tty 2>/dev/null", opts);
+    if (!out.ok()) {
+        baml.io.print(text);
+    };
 }
 
 function banner() -> string {
-    root.ansi
-        .cyan(
-            "\n  ┌────────────────────────────────────────────┐\n"
-                + "  │   bamlcode · a tiny Claude Code, in BAML     │\n"
-                + "  └────────────────────────────────────────────┘\n",
-        )
+    root.ansi.cyan(
+        "\n  ┌────────────────────────────────────────────┐\n"
+            + "  │   bamlcode · a tiny Claude Code, in BAML     │\n"
+            + "  └────────────────────────────────────────────┘\n",
+    )
         + root.ansi.gray("  Ask me to read, edit, or build code in this dir.\n\n")
         + "  "
         + root.ansi.yellow("type a task")
@@ -574,13 +557,13 @@ function arrow(s: string) -> string {
     root.ansi.cyan("→ " + s)
 }
 
-// Tool result: dim by default, red when it's an error.
+// Tool result: default terminal foreground, red when it's an error.
 function style_result(result: string) -> string {
     let body = indent(result);
     if (result.starts_with("ERROR")) {
         root.ansi.red(body)
     } else {
-        root.ansi.gray(body)
+        body
     }
 }
 

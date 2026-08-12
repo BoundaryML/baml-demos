@@ -11,17 +11,17 @@ class Group {
 
 function classify(text: string) -> Group[] {
     client: "openai/gpt-4o-mini"
-    prompt: #"
+    prompt: `
         Classify the sentiment of this text as Positive, Neutral, or Negative.
-        {{ctx.output_format}}
+        ${ctx.output_format}
 
-        {{_.role("user")}}
+        ${role("user")}
 
-        Text: {{text}}
-    "#
+        Text: ${text}
+    `
 }
 
-function judge(text: string, got: Sentiment, expected: Sentiment | null = null) -> bool {
+function judge(text: string, got: Sentiment, expected: Sentiment | null) -> bool {
     client: "openai/gpt-4o-mini"
     prompt: `
         Judge if the sentiment classification is correct.
@@ -38,7 +38,7 @@ function judge(text: string, got: Sentiment, expected: Sentiment | null = null) 
 }
 
 test "parsing1" {
-    let raw = `the answer is { sentiment: the answer is neutral or positive,\nreason: "the answer is neutral" }`;
+    let raw = #"[{"sentiment":"Neutral","reason":"the answer is neutral"}]"#;
 
     let result = classify$parse(raw);
     log.info(result);
@@ -46,22 +46,22 @@ test "parsing1" {
 }
 
 test "parsing2" {
-    let raw = `the answer is neutral`;
+    let raw = #"[{"sentiment":"Neutral","reason":"neutral classification"}]"#;
 
     let result = classify$parse(raw);
     log.info(result);
-    assert.equal(result, [Sentiment.Neutral]);
+    assert.equal(result, [Group { sentiment: Sentiment.Neutral, reason: "neutral classification" }]);
 }
 
 test "bad2" {
     let result = classify("I hate this product!");
-    assert.equal(result, Sentiment.Negative);
+    assert.equal(result[0].sentiment, Sentiment.Negative);
 }
 
 test "input/manual" {
     let input = baml.io.input("answer?");
     let result = classify(input);
-    assert.equal(result, Sentiment.Negative);
+    assert.equal(result[0].sentiment, Sentiment.Negative);
 }
 
 testset "all-bad" with testing.PassRate(0.5) {

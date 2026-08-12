@@ -1,6 +1,9 @@
 [package]
 name = "bamlcode"
 
+[toolchain]
+version = "0.15.1-nightly.20260810.b"
+
 # Emit a typed Python (Pydantic v2) SDK next to the Python bridge code.
 [generator.py]
 output_type = "python/pydantic"

@@ -46,7 +46,7 @@ baml-email-agent-demo/
 ├── app.py                  # Streamlit UI over the same bridge
 ├── run_campaign.py         # the Python bridge / CLI driver
 ├── example-contacts.csv    # sample contacts (same as the original app)
-└── pyproject.toml          # uv project; depends on baml_core (the runtime)
+└── pyproject.toml          # uv project; depends on baml_bridge (the runtime)
 ```
 
 ## Run it
@@ -54,8 +54,8 @@ baml-email-agent-demo/
 ### Prerequisites
 
 ```bash
-# Generate the Python SDK from the BAML sources (uses the local CLI in this repo):
-~/baml/baml_language/target/debug/baml-cli generate
+# Generate the Python SDK from the BAML sources:
+baml generate
 
 # Create the venv and install the BAML runtime:
 uv sync
@@ -98,7 +98,7 @@ Flags: `--contacts <csv>`, `--system-prompt <text>`, `--follow-ups 0..2`, `--no-
 The pure logic — prompt assembly, pluralization, optional-field handling, source rendering — is unit-tested in BAML with no model calls:
 
 ```bash
-~/baml/baml_language/target/debug/baml-cli test
+baml test
 ```
 
 Each `test` runs offline on literal data; the LLM functions are exercised only in live runs (calling one in a `test` would make a real request). This mirrors the original repo's "test the orchestration, not the model" stance.

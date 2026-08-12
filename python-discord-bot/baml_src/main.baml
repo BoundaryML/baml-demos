@@ -3,7 +3,11 @@ class DiscordMessage {
     content: string,
 }
 
-function respond(message: DiscordMessage, delete_callback: () -> null throws never, send_update: (string) -> null throws never) -> string {
+function respond(
+    message: DiscordMessage,
+    delete_callback: () -> null throws never,
+    send_update: (string) -> null throws never,
+) -> string {
     let response_type = decide_response(message.content);
     match (response_type) {
         ResponseType.HelpfulResponse => {
@@ -11,7 +15,8 @@ function respond(message: DiscordMessage, delete_callback: () -> null throws nev
             let history = [];
             while (turns < 50) {
                 turns += 1;
-                match helpful_turn(message.from_user, message.content, history) {
+                let turn = helpful_turn(message.from_user, message.content, history);
+                match (turn) {
                     let r: SendResponse => {
                         return r.message;
                     },
@@ -32,10 +37,12 @@ function respond(message: DiscordMessage, delete_callback: () -> null throws nev
                                 continue;
                             }
                         };
-                        history.push(`
-                            Harness: FetchWebpage response code ${response.status_code}:
-                            ${response.text()}
-                        `);
+                        history.push(
+                            `
+                                Harness: FetchWebpage response code ${response.status_code}:
+                                ${response.text()}
+                            `,
+                        );
                     },
                 }
             }
@@ -69,14 +76,19 @@ function helpful_turn(username: string, message: string, history: string[]) -> H
 }
 
 type HelpfulTools = SendResponse | TurnMessage | FetchWebpage;
+
 class SendResponse {
     @@description("Send your final response to the user")
     message: string,
 }
+
 class TurnMessage {
-    @@description("Send an intermediate message to keep the user updated. This is recommended when using other tools so the user is kept up-to-date.")
+    @@description(
+        "Send an intermediate message to keep the user updated. This is recommended when using other tools so the user is kept up-to-date.",
+    )
     message: string,
 }
+
 class FetchWebpage {
     @@description("Fetch a webpage with a GET request")
     url: string,
@@ -113,10 +125,6 @@ function decide_response(message: string) -> ResponseType {
     `
 }
 
-client Terra {
-    provider: openai,
-    options: {
-        model: "gpt-5.6-terra",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client Terra = openai.OpenAiClient.new(
+    model = "gpt-5.6-terra",
+);

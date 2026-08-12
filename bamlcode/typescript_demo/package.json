@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@boundaryml/baml-core-node": "file:../../../baml2/baml_language/sdks/nodejs/bridge_nodejs"
+    "@boundaryml/baml-bridge": "0.15.1-nightly.20260810.b"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

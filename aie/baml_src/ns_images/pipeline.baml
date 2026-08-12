@@ -5,14 +5,11 @@ enum Sentiment {
     Foo,
 }
 
-client AiGatewayImagenImageClient {
-    provider: ai-gateway-images,
-    options: {
-        model: "google/imagen-4.0-fast-generate-001",
-        api_key: env.AI_GATEWAY_API_KEY,
-        n: 1,
-    },
-}
+client AiGatewayImagenImageClient = openai.OpenAiClient.new(
+    model = "google/imagen-4.0-fast-generate-001",
+    api_key_env = "AI_GATEWAY_API_KEY",
+    base_url = "https://ai-gateway.vercel.sh/v1",
+);
 
 function generate_image(thing: string) -> image {
     client: AiGatewayImagenImageClient
@@ -52,13 +49,13 @@ class JudgeResponse {
 
 function evaluate_image(img: image, goal: string) -> JudgeResponse {
     client: "openai/gpt-4o-mini"
-    prompt: #"
+    prompt: `
         Evaluate how well this image matches the goal:
-        {{ctx.output_format}}
+        ${ctx.output_format}
 
-        {{_.role("user")}}
+        ${role("user")}
 
-        Goal: {{goal}}
-        Image: {{img}}
-    "#
+        Goal: ${goal}
+        Image: ${img}
+    `
 }

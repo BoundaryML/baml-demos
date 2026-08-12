@@ -4,14 +4,10 @@
 
 // Stronger model, reserved for judging — you want the grader to be at least
 // as capable as the model being graded.
-client<llm> Grader {
-    provider: anthropic,
-    options: {
-        model: "claude-sonnet-4-6",
-        api_key: env.ANTHROPIC_API_KEY,
-        max_tokens: 1024,
-    },
-}
+client Grader = anthropic.AnthropicClient.new(
+    model = "claude-sonnet-4-6",
+    max_tokens = 1024,
+);
 
 // ---------------------------------------------------------------------------
 // LLM-as-judge: a second model grades the first model's answer.
@@ -23,16 +19,16 @@ class Judgement {
 
 function judge(text: string, label: Label) -> Judgement {
     client: Grader
-    prompt: #"
-        A sentiment classifier labeled this text as "{{ label }}":
+    prompt: `
+        A sentiment classifier labeled this text as "${label}":
 
-        Text: {{ text }}
+        Text: ${text}
 
         Would a careful human reader accept that label as reasonable?
         Reasonable means defensible — not necessarily the only valid answer.
 
-        {{ ctx.output_format }}
-    "#
+        ${ctx.output_format}
+    `
 }
 
 // ---------------------------------------------------------------------------
@@ -40,13 +36,13 @@ function judge(text: string, label: Label) -> Judgement {
 // ---------------------------------------------------------------------------
 function generate_examples(label: Label, n: int) -> string[] {
     client: Mini
-    prompt: #"
-        Write exactly {{ n }} short, realistic product-review sentences whose
-        sentiment is clearly {{ label }}. Vary the products and phrasing, and
-        do not use the word "{{ label }}" itself.
+    prompt: `
+        Write exactly ${n} short, realistic product-review sentences whose
+        sentiment is clearly ${label}. Vary the products and phrasing, and
+        do not use the word "${label}" itself.
 
-        {{ ctx.output_format }}
-    "#
+        ${ctx.output_format}
+    `
 }
 
 // ---------------------------------------------------------------------------
