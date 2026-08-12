@@ -2,10 +2,10 @@
 
 A tiny **Claude Code**, written entirely in [BAML](https://github.com/boundaryml/baml).
 
-It's an agentic coding CLI: you give it a task, and it reasons, then takes **one
-tool action at a time** — read / write / edit files, list directories, run shell
-commands — feeding each result back to the model until it answers you. The whole
-agent loop (the brain, the tools, the REPL, the I/O) lives in `.baml`.
+It's an agentic coding CLI built on BAML's `ai.Agent` runner. You give it a task,
+and the runner lets the model call typed BAML functions to read, write, and edit
+files, list directories, and run shell commands until it produces a typed final
+answer. The tools, event handling, REPL, and I/O all live in `.baml`.
 
 ```
   ┌────────────────────────────────────────────┐
@@ -131,12 +131,12 @@ skipped.
 
 | Piece | Where | What it does |
 |-------|-------|--------------|
-| `Step` | `ns_agent/agent.baml` | The model's structured decision: a `thought`, an `action`, and the args for that action. BAML's return-type parsing guarantees it's well-formed. |
-| `decide(transcript)` | `ns_agent/agent.baml` | The brain. Given the running transcript, the LLM picks the next single step. |
-| `tool_*` | `ns_agent/agent.baml` | The tools: `read_file`, `write_file`, `edit_file`, `list_dir`, `run_bash`. Each returns plain text the model can read; errors come back as recoverable `ERROR: …` strings rather than crashes. |
-| `execute(step)` | `ns_agent/agent.baml` | Dispatches a `Step` to its tool via `match` on the action. |
-| `run_turn(history, msg)` | `ns_agent/agent.baml` | The agent loop: `decide → execute → observe`, appending to the transcript, until the model chooses `respond` (or hits the 30-step cap). |
-| `run_supervised(...)` | `ns_agent/agent.baml` | Runs `run_turn` in a spawned concurrent task while polling stdin, so esc + enter can `future.cancel()` it mid-step. Other typed lines are collected on `Turn.queued` to run after the turn. |
+| `code(history, task)` | `ns_agent/agent.baml` | A tool-enabled LLM function. Its `tools:` field becomes a typed `ai.FunctionSpec<AgentAnswer>`. |
+| `read_file`, etc. | `ns_agent/agent.baml` | Ordinary typed BAML functions registered as tools. Their signatures and docstrings become tool schemas. |
+| `ai.Agent<AgentAnswer>` | BAML stdlib | Owns model turns, concurrent tool dispatch, parse repair, failure handling, the 30-step budget, and the event journal. |
+| `on_agent_event(event)` | `ns_agent/agent.baml` | Renders reasoning and tool events while the runner is active. |
+| `run_turn(history, msg)` | `ns_agent/agent.baml` | Runs `code@spec(...)`, converts the `ai.RunResult` journal into cross-turn history, and returns the existing `Turn`. |
+| `run_supervised(...)` | `ns_agent/agent.baml` | Runs `run_turn` in a spawned task while polling stdin, so esc + enter can cancel it mid-step. Other typed lines are collected on `Turn.queued`. |
 | `main()` / `ask(task)` | `ns_agent/agent.baml` | The interactive REPL and the one-shot entry point. |
 
 The loop streams its progress straight to your terminal via `/dev/tty` (BAML
@@ -145,12 +145,12 @@ input from stdin.
 
 ## Tests
 
-`baml_src/tests.baml` covers the tool layer deterministically — no LLM calls, no
-tokens:
+`baml_src/ns_agent/tests.baml` covers the tools, agent spec, journal conversion,
+queue, and interruption logic deterministically with no LLM calls or tokens:
 
 ```bash
-baml test
-# 28 passed, 0 failed   (needs ANTHROPIC_API_KEY — the sentiment evals call live models)
+baml test -i 'root.agent::*'
+# 17 passed, 0 failed
 ```
 
 ## Testing showcase: the sentiment classifier
