@@ -14,6 +14,10 @@ bamlcode/typescript_demo/pnpm-lock.yaml
 # BAML runtime state (profiling caches written when running baml)
 .baml/
 
+# Project-local agent skills (install with `baml agent install`)
+**/.agents/skills/
+**/.claude/skills/
+
 # Python
 __pycache__/
 *.py[cod]
