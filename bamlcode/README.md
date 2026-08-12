@@ -29,20 +29,26 @@ you › add a docstring to the top of hello.py
 
 ```bash
 brew tap boundaryml/baml && brew install baml   # if you don't have it
-export ANTHROPIC_API_KEY=sk-ant-...             # the default brain is Claude
+export ANTHROPIC_API_KEY=sk-ant-...             # for --provider anthropic
+export OPENAI_API_KEY=sk-...                    # for --provider openai
 ```
 
-To use OpenAI instead, set `OPENAI_API_KEY` and switch `client: Brain` →
-`client: BrainOpenAI` in `baml_src/ns_agent/agent.baml`.
+Anthropic is the default provider. Select OpenAI at runtime with
+`--provider openai`; no source changes are needed.
 
 ## Run
 
 ```bash
-baml run agent.main                                       # the REPL
-baml run agent.ask -- --task "list the python files"      # one-shot
+baml run agent.main -- --provider anthropic               # Anthropic REPL
+baml run agent.main -- --provider openai                  # OpenAI REPL
+baml run agent.ask -- --task "list the python files" --provider openai
 baml test                                                 # run the tool-layer tests
 baml run --list                                           # see every function
 ```
+
+The REPL prints the selected client and request status immediately. Provider,
+authentication, and network failures are printed as errors. Set `NO_COLOR=1`
+if your terminal theme makes ANSI colors difficult to read.
 
 Or build the standalone binaries (below) and run those:
 
@@ -150,7 +156,7 @@ queue, and interruption logic deterministically with no LLM calls or tokens:
 
 ```bash
 baml test -i 'root.agent::*'
-# 17 passed, 0 failed
+# 19 passed, 0 failed
 ```
 
 ## Testing showcase: the sentiment classifier

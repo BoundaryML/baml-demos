@@ -35,6 +35,15 @@ class FakeAgentClient {
     }
 }
 
+function provider_error(provider: string) -> string {
+    let _ = resolve_client(provider) catch_all (e) {
+        _ => {
+            return e.to_string();
+        },
+    };
+    ""
+}
+
 testset "tools" {
     // write → read round-trips, with line numbers added on read.
     test "write_then_read" {
@@ -141,6 +150,16 @@ testset "interrupt" {
 }
 
 testset "agent" {
+    test "provider_selection" {
+        assert.equal(resolve_client("anthropic").id(), "anthropic/claude-sonnet-4-6");
+        assert.equal(resolve_client(" OPENAI ").id(), "openai/gpt-4o");
+        assert.contains(provider_error("unknown"), "expected anthropic or openai");
+    }
+
+    test "tool_results_use_default_foreground" {
+        assert.equal(style_result("visible"), "    visible");
+    }
+
     test "runner_calls_tool_and_parses_final_answer" {
         let fake = FakeAgentClient { calls: 0 };
         let runner = ai.Agent<AgentAnswer>.new(max_steps = 3, client = fake);

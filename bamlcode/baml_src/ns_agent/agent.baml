@@ -240,9 +240,13 @@ function turn_from_result(
     }
 }
 
-function run_turn(history: string, user_msg: string) -> Turn {
+function run_turn(history: string, user_msg: string, provider: string = "anthropic") -> Turn {
+    let selected = resolve_client(provider);
+    say(`  working with ${selected.id()}...\n`);
+    require_provider_credentials(provider);
     let runner = ai.Agent<AgentAnswer>.new(
         max_steps = 30,
+        client = selected,
         tool_errors = ai.tools.ErrorMode.Report,
         on_event = on_agent_event,
     );
@@ -292,8 +296,8 @@ function classify_interrupt(raw: string) -> Interrupt {
 // while we poll stdin. Pressing esc + enter cancels the future *mid-step* —
 // even during an in-flight LLM call; any other line queues to run after the
 // turn (returned on Turn.queued) without disturbing it.
-function run_supervised(history: string, msg: string) -> Turn {
-    let fut = spawn { run_turn(history, msg) };
+function run_supervised(history: string, msg: string, provider: string = "anthropic") -> Turn {
+    let fut = spawn { run_turn(history, msg, provider = provider) };
 
     let cancelled = false;
     let queued: string[] = [];
@@ -323,11 +327,13 @@ function run_supervised(history: string, msg: string) -> Turn {
     let turn = if (cancelled) {
         interrupt_turn(history, 0)
     } else {
-        (await fut) catch (e) {
+        (await fut) catch_all (e) {
             _ => {
+                let message = e.to_string();
+                say("\n" + root.ansi.red("ERROR: " + message) + "\n");
                 Turn {
-                    answer: "(the turn failed — see the error above)",
-                    transcript: history + "\n[turn errored]\n",
+                    answer: "ERROR: " + message,
+                    transcript: history + "\n[turn errored] " + message + "\n",
                     steps: 0,
                     interrupted: false,
                     queued: [],
@@ -354,8 +360,10 @@ function run_supervised(history: string, msg: string) -> Turn {
 // Stage messages with /queue, then run them in order. (You can also type-ahead
 // while a turn runs — the terminal buffers your keystrokes, and the next
 // read_line picks each line up as its own turn. No queue file involved.)
-function main() -> string {
+function main(provider: string = "anthropic") -> string {
+    let selected = resolve_client(provider);
     say(banner());
+    say(`  provider: ${selected.id()}\n`);
     let history = "";
     let queue: string[] = [];
     let running = true;
@@ -385,21 +393,21 @@ function main() -> string {
                 if (queue.length() == 0) {
                     say("  (nothing queued)\n");
                 } else {
-                    history = run_queue(history, queue);
+                    history = run_queue(history, queue, provider = provider);
                     queue = [];
                 };
             } else {
                 // Run the typed task now, then drain anything staged with /queue
                 // or typed while it ran. (Press esc + enter mid-turn to cancel;
                 //  any other typed line queues to run after the turn.)
-                let turn = run_supervised(history, msg);
+                let turn = run_supervised(history, msg, provider = provider);
                 history = turn.transcript;
                 for (let q in turn.queued) {
                     queue.push(q);
                 }
                 // If the user cancelled, leave the staged queue for later.
                 if (!turn.interrupted && queue.length() > 0) {
-                    history = run_queue(history, queue);
+                    history = run_queue(history, queue, provider = provider);
                     queue = [];
                 };
             };
@@ -412,14 +420,14 @@ function main() -> string {
 
 // Run every queued message in order, threading history through each turn.
 // Lines typed while a queued turn runs join the back of the same batch.
-function run_queue(history: string, queue: string[]) -> string {
+function run_queue(history: string, queue: string[], provider: string = "anthropic") -> string {
     let h = history;
     let i = 0;
     while (i < queue.length()) {
         let m = queue[i];
         i = i + 1;
         say(root.ansi.magenta(`\n◆ queued (${i}/${queue.length()}) › ${m}`) + "\n");
-        let t = run_supervised(h, m);
+        let t = run_supervised(h, m, provider = provider);
         h = t.transcript;
         for (let q in t.queued) {
             queue.push(q);
@@ -435,8 +443,8 @@ function run_queue(history: string, queue: string[]) -> string {
 
 // One-shot mode for scripting/tests. Returns just the final answer.
 // baml run agent.ask --json-args '{"task": "..."}'
-function ask(task: string) -> string {
-    let turn = run_turn("", task);
+function ask(task: string, provider: string = "anthropic") -> string {
+    let turn = run_turn("", task, provider = provider);
     turn.answer
 }
 
@@ -496,11 +504,14 @@ function read_line() -> Line {
     Line { text: out.stdout.to_string(), eof: out.exit_code != 0 }
 }
 
-// Write directly to the controlling terminal so output streams live
-// (baml captures normal stdout, so we bypass it via /dev/tty).
+// Write directly to the controlling terminal when available. Fall back to
+// BAML's flushed stdout for non-TTY environments.
 function say(text: string) -> void {
     let opts = baml.sys.ProcessOptions { cwd: null, env: null, timeout_ms: null, stdin: text };
-    baml.sys.shell("cat > /dev/tty 2>/dev/null", opts);
+    let out = baml.sys.shell("cat > /dev/tty 2>/dev/null", opts);
+    if (!out.ok()) {
+        baml.io.print(text);
+    };
 }
 
 function banner() -> string {
@@ -546,13 +557,13 @@ function arrow(s: string) -> string {
     root.ansi.cyan("→ " + s)
 }
 
-// Tool result: dim by default, red when it's an error.
+// Tool result: default terminal foreground, red when it's an error.
 function style_result(result: string) -> string {
     let body = indent(result);
     if (result.starts_with("ERROR")) {
         root.ansi.red(body)
     } else {
-        root.ansi.gray(body)
+        body
     }
 }
 
