@@ -2,4 +2,4 @@
 name = "baml-c-compiler"
 
 [toolchain]
-channel = "canary"
+version = "0.15.1-nightly.20260810.b"

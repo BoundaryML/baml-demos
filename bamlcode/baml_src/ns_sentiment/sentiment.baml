@@ -4,14 +4,10 @@
 // eval.baml, and the guided tour of testsets in tests.baml.
 
 // Cheap + fast model for classification.
-client<llm> Mini {
-    provider: anthropic,
-    options: {
-        model: "claude-haiku-4-5",
-        api_key: env.ANTHROPIC_API_KEY,
-        max_tokens: 1024,
-    },
-}
+client Mini = anthropic.AnthropicClient.new(
+    model = "claude-haiku-4-5",
+    max_tokens = 1024,
+);
 
 type Label = "positive" | "negative" | "neutral";
 
@@ -23,13 +19,13 @@ class Verdict {
 // The function under test.
 function classify(text: string) -> Verdict {
     client: Mini
-    prompt: #"
+    prompt: `
         Classify the sentiment of the text below as positive, negative, or
         neutral. Sarcasm counts as the sentiment actually expressed, not the
         literal words. Plain statements of fact are neutral.
 
-        Text: {{ text }}
+        Text: ${text}
 
-        {{ ctx.output_format }}
-    "#
+        ${ctx.output_format}
+    `
 }

@@ -1,6 +1,9 @@
 [package]
 name = "baml-deep-research-demo"
 
+[toolchain]
+version = "0.15.1-nightly.20260810.b"
+
 [generator.python]
 output_type = "python/pydantic"
 output_dir = "."

@@ -66,17 +66,16 @@ function handle(sock: baml.net.TcpStream, conn_id: int) -> null {
 function spawn_handler(
     sock: baml.net.TcpStream,
     id: int,
-) -> baml.future.Future<null, baml.errors.InvalidArgument | baml.errors.Io> {
+) -> baml.future.Future<null, baml.errors.Io> {
     spawn { handle(sock, id) }
 }
 
 /// Bind, accept, spawn per connection. Loops forever — Ctrl-C to exit.
 function serve() -> null {
     let listener = baml.net.TcpListener.bind("127.0.0.1:8080");
-    baml.io
-        .println(
-            "listening on http://127.0.0.1:8080 — fire concurrent curls and watch them all return in ~0.5s",
-        );
+    baml.io.println(
+        "listening on http://127.0.0.1:8080 — fire concurrent curls and watch them all return in ~0.5s",
+    );
     let conn_id = 0;
     while (true) {
         let sock = listener.accept();

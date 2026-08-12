@@ -3,28 +3,16 @@
 // evaluation/learning/report agents use gpt-4.1 (smarter) -> Smart
 // researchAgent (the tool-calling planner) used gpt-4o -> Planner
 
-client<llm> Fast {
-    provider: openai,
-    options: {
-        model: "gpt-4.1-mini",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client Fast = openai.OpenAiClient.new(
+    model = "gpt-4.1-mini",
+);
 
-client<llm> Smart {
-    provider: openai,
-    options: {
-        model: "gpt-4.1",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client Smart = openai.OpenAiClient.new(
+    model = "gpt-4.1",
+);
 
 // Ports researchAgent's planner model (Mastra used openai/gpt-4o for the
 // tool-calling planner; only its query-breakdown survives as plan_research_queries).
-client<llm> Planner {
-    provider: openai,
-    options: {
-        model: "gpt-4o",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client Planner = openai.OpenAiClient.new(
+    model = "gpt-4o",
+);

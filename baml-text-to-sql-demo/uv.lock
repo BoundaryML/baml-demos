@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
@@ -63,22 +63,22 @@ wheels = [
 ]
 
 [[package]]
-name = "baml-core"
-version = "0.13.0"
+name = "baml-bridge"
+version = "0.15.1.dev2026081001"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "protobuf" },
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/08/bb/7a7e081acceb68c7aae8ca6eb8ea38536c516670d79b4b3ef5332bcd5cc5/baml_core-0.13.0-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:93914c027aeadbcc7696f35ebcfb4c00c94a083ff1732812b6c628a407e12a68", size = 8077500, upload-time = "2026-06-28T02:11:13.766Z" },
-    { url = "https://files.pythonhosted.org/packages/9d/85/eba3180c64504a60576243ab16fcbe2edaac9d03120aa97af5a657be7f0e/baml_core-0.13.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:8c966b9e19e6e17b77e0acaa105a81790ede2e1b188e82d74c22438644fda119", size = 7738435, upload-time = "2026-06-28T02:11:15.922Z" },
-    { url = "https://files.pythonhosted.org/packages/e0/29/a45c940db9cb5aa59326808aa7fda64c094fdc15378594b2211e34b80b08/baml_core-0.13.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ae8cfecbf967cd4c0fb9b728e8b7a595f6152a9803ba96203623955f2837d44b", size = 8294681, upload-time = "2026-06-28T02:11:18.112Z" },
-    { url = "https://files.pythonhosted.org/packages/9e/1f/a924d7a79855e3684686f92f39af3e0ec20e255c14bf1dc975f399c66b3e/baml_core-0.13.0-cp310-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:f67afb6215dd58326fcd338b0665777cb12586b8321bcf829e78745926418c32", size = 7752740, upload-time = "2026-06-28T02:11:20.385Z" },
-    { url = "https://files.pythonhosted.org/packages/ee/88/fc12a1d15402859b7f5b902ca6bf75c4e6ba945521744f71ac7d43559f8f/baml_core-0.13.0-cp310-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:49a089bcffe0309e71558815ea009100a399b01595fa8ea54f38bab7d226e014", size = 7958871, upload-time = "2026-06-28T02:11:22.418Z" },
-    { url = "https://files.pythonhosted.org/packages/6f/3d/e91a5d3176245be21d1987182892b5006b08cdcfd10e2913ece7906bc3e7/baml_core-0.13.0-cp310-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:17452daaf5cbfeaa28ce379a2dbbef429c73130c73c23e8ccb4dd6fc9186ca30", size = 8450041, upload-time = "2026-06-28T02:11:24.665Z" },
-    { url = "https://files.pythonhosted.org/packages/59/e9/8b17db529b7af36d0d38a0b0c538cb6fe6c3a87f12079601fa3a739ab68a/baml_core-0.13.0-cp310-abi3-win_amd64.whl", hash = "sha256:c889123dacde2b4a1e8f8c78df0c8c6aa5004a1e4f76fc180ac82d8a5ad1bfc8", size = 8291777, upload-time = "2026-06-28T02:11:27.626Z" },
-    { url = "https://files.pythonhosted.org/packages/0d/ab/ce5cb424f761a8d774e50027a1c0c3b7ebc32ecc14b1b6312b37a05e29b5/baml_core-0.13.0-cp310-abi3-win_arm64.whl", hash = "sha256:bfecca1db8614b76a1814db24ffa9d15985ca68e68982ced117e260962488cda", size = 7968487, upload-time = "2026-06-28T02:11:29.796Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/7e/76103c79721b067cd162a4575b6397ce2e6414d7f7c60e752436456133af/baml_bridge-0.15.1.dev2026081001-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:209bf3b7cd2d2887d65e5ea88aef6ed6d09ec8e811d319881ee89451f5c7dd76", size = 8281314, upload-time = "2026-08-11T23:53:45.654Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/62/8c381f5c53b09502c967f6bd7c3f631680e4c8ddba4b3fc6f82e14933338/baml_bridge-0.15.1.dev2026081001-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:4d0216a87e4d462b3bd5f1d90203f19f9074c83582f36ed4cc07c1a31b804019", size = 7959142, upload-time = "2026-08-11T23:53:47.764Z" },
+    { url = "https://files.pythonhosted.org/packages/be/d0/44b5707ba42f3219a5f7750224ec673f6eb13dea0b3eab0b4b9c647599e4/baml_bridge-0.15.1.dev2026081001-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c4bcacfb6f3948a1c4f76d1e2f82b615193628ede225154374e1ea915eb13d4f", size = 8469992, upload-time = "2026-08-11T23:53:49.775Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/5b/775d6dac876c120ca2b3f5fc23a747e20f4fbbecaf5352ae690d4f05387c/baml_bridge-0.15.1.dev2026081001-cp310-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:b2c10dcefe5e57f04aec88f06985e6d3dba315af576f66242068f4c29ebf9796", size = 7938334, upload-time = "2026-08-11T23:53:52.069Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/5e/bfe50e38e97bd2dd4e4c376b8b5540faaa673ddd2f5aece8f7448c2778b5/baml_bridge-0.15.1.dev2026081001-cp310-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:8d6e12da1533deb4eca6a0d7a5bac83d218b97c980175952389bb5d8039256f6", size = 8152773, upload-time = "2026-08-11T23:53:53.874Z" },
+    { url = "https://files.pythonhosted.org/packages/90/bb/14145ed91d9de7d8deff00cde3e3e0ca81edb60ac480147592cd1725a5d6/baml_bridge-0.15.1.dev2026081001-cp310-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:9ffe9a3570eaddc838796fd072e198b1bbcc515d4431211d8b0daedc8e737935", size = 8635035, upload-time = "2026-08-11T23:53:55.918Z" },
+    { url = "https://files.pythonhosted.org/packages/1b/c8/ad0f11dd1898c4b06497c2981c260633e88ce49c4b2e82d1b90de7c67b91/baml_bridge-0.15.1.dev2026081001-cp310-abi3-win_amd64.whl", hash = "sha256:1b114e7eabf3591d628d8ada2c6b1d4f51671917b77ef0d7bab74a66a701a4c9", size = 8472213, upload-time = "2026-08-11T23:53:58.449Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/99/ea0216577fb7e35fd829d7a859dd1cbdab1968d030eecd699544097e83c2/baml_bridge-0.15.1.dev2026081001-cp310-abi3-win_arm64.whl", hash = "sha256:142c1292330ade8dfaf149a181abc08fbf4cd6790ed2a5c3b303f8ce270470ad", size = 8163322, upload-time = "2026-08-11T23:54:00.724Z" },
 ]
 
 [[package]]
@@ -86,7 +86,7 @@ name = "baml-text-to-sql-demo"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "baml-core" },
+    { name = "baml-bridge" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "psycopg2-binary" },
@@ -96,7 +96,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "baml-core", specifier = "==0.13.0" },
+    { name = "baml-bridge", specifier = "==0.15.1.dev2026081001" },
     { name = "pandas", specifier = ">=2" },
     { name = "psycopg2-binary", specifier = ">=2.9" },
     { name = "pydantic", specifier = ">=2" },
@@ -261,7 +261,7 @@ name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+    { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
@@ -728,10 +728,10 @@ resolution-markers = [
     "python_full_version < '3.11'",
 ]
 dependencies = [
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "python-dateutil", marker = "python_full_version < '3.11'" },
-    { name = "pytz", marker = "python_full_version < '3.11'" },
-    { name = "tzdata", marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" } },
+    { name = "python-dateutil" },
+    { name = "pytz" },
+    { name = "tzdata" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/33/01/d40b85317f86cf08d853a4f495195c73815fdf205eef3993821720274518/pandas-2.3.3.tar.gz", hash = "sha256:e05e1af93b977f7eafa636d043f9f94c7ee3ac81af99c13508215942e64c993b", size = 4495223, upload-time = "2025-09-29T23:34:51.853Z" }
 wheels = [
@@ -800,10 +800,10 @@ resolution-markers = [
     "python_full_version == '3.11.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "python-dateutil", marker = "python_full_version >= '3.11'" },
-    { name = "tzdata", marker = "(python_full_version >= '3.11' and sys_platform == 'emscripten') or (python_full_version >= '3.11' and sys_platform == 'win32')" },
+    { name = "python-dateutil" },
+    { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f8/87/4341c6252d1c47b08768c3d25ac487362bf403f0313ddae4a2a26c9b1b4c/pandas-3.0.3.tar.gz", hash = "sha256:696a4a00a2a2a35d4e5deb3fc946641b96c944f02230e4f76137fe35d806c4fc", size = 4651414, upload-time = "2026-05-11T18:54:29.21Z" }
 wheels = [

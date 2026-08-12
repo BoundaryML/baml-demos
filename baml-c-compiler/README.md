@@ -23,11 +23,10 @@ Then you need the `baml` CLI. Either works:
 
 **A — Installed `baml` (simplest).** If you have it via Homebrew
 (`brew install boundaryml/tap/baml`), you're set: `baml.toml` here pins the
-**canary** toolchain, so the first `baml` command in this directory auto-fetches
-it. Confirm with `baml --version`, then jump to **Run it**.
+nightly toolchain. Confirm with `baml --version`, then jump to **Run it**.
 
 **B — Built from the baml repo (verified fallback).** If step A's `baml test`
-reports a parse/check error, your published canary is older than this demo — build
+reports a parse/check error, your installed toolchain is older than this demo — build
 the CLI from your local `baml` checkout and run the demo against it:
 
 ```bash

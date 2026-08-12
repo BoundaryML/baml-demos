@@ -5,18 +5,10 @@
 // OpenAI provider so it runs with an OPENAI_API_KEY.)
 // Both read OPENAI_API_KEY from the environment at call time.
 
-client<llm> ResearchModel {
-    provider: openai,
-    options: {
-        model: "gpt-4o-mini",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client ResearchModel = openai.OpenAiClient.new(
+    model = "gpt-4o-mini",
+);
 
-client<llm> EmailModel {
-    provider: openai,
-    options: {
-        model: "gpt-4o",
-        api_key: env.OPENAI_API_KEY,
-    },
-}
+client EmailModel = openai.OpenAiClient.new(
+    model = "gpt-4o",
+);

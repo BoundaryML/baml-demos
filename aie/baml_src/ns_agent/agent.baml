@@ -124,12 +124,12 @@ class Interrupt {
 // ---------------------------------------------------------------------------
 function decide(transcript: string) -> Step {
     client: Brain
-    prompt: #"
+    prompt: `
         You are bamlcode, a CLI coding agent (think "Claude Code") operating inside the
         user's current working directory. You complete software tasks by taking ONE tool
         action at a time. After each action you will see its result and decide what to do next.
 
-        Available actions (set `action` and fill ONLY the matching fields):
+        Available actions (set \`action\` and fill ONLY the matching fields):
           - read_file   → read a file.                fields: path
           - write_file  → create or overwrite a file. fields: path, content
           - edit_file   → replace exact text once.    fields: path, old_str, new_str
@@ -148,18 +148,18 @@ function decide(transcript: string) -> Step {
           - edit_file replaces the FIRST exact occurrence of old_str, so make old_str unique
             and copy it byte-for-byte from the file (including whitespace).
           - Use run_bash for things tools don't cover (grep, running tests, git, mkdir, etc.).
-          - Keep `thought` to one short sentence.
-          - When the task is complete, or you need a decision from the user, use `respond`.
+          - Keep \`thought\` to one short sentence.
+          - When the task is complete, or you need a decision from the user, use \`respond\`.
           - Do NOT repeat an action that already succeeded; build on prior results.
 
         Transcript so far (USER messages, your THOUGHT/ACTION/RESULT trail):
         ----------------------------------------------------------------------
-        {{ transcript }}
+        ${transcript}
         ----------------------------------------------------------------------
 
         Decide the single next step.
-        {{ ctx.output_format }}
-    "#
+        ${ctx.output_format}
+    `
 }
 
 // ---------------------------------------------------------------------------
@@ -460,11 +460,9 @@ function run_supervised(history: string, msg: string) -> Turn {
                 queued.push(probe.queued);
                 say(
                     "\n  "
-                        + root
-                            .ansi
-                            .yellow(
-                                `✚ queued for after this turn (${queued.length()} waiting): ${probe.queued}`,
-                            )
+                        + root.ansi.yellow(
+                            `✚ queued for after this turn (${queued.length()} waiting): ${probe.queued}`,
+                        )
                         + "\n",
                 );
             };
@@ -607,12 +605,11 @@ function say(text: string) -> void {
 }
 
 function banner() -> string {
-    root.ansi
-        .cyan(
-            "\n  ┌────────────────────────────────────────────┐\n"
-                + "  │   bamlcode · a tiny Claude Code, in BAML     │\n"
-                + "  └────────────────────────────────────────────┘\n",
-        )
+    root.ansi.cyan(
+        "\n  ┌────────────────────────────────────────────┐\n"
+            + "  │   bamlcode · a tiny Claude Code, in BAML     │\n"
+            + "  └────────────────────────────────────────────┘\n",
+    )
         + root.ansi.gray("  Ask me to read, edit, or build code in this dir.\n\n")
         + "  "
         + root.ansi.yellow("type a task")

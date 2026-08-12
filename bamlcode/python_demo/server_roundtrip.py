@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["baml-core", "pydantic"]
+# dependencies = ["baml-bridge==0.15.1.dev2026081001", "pydantic"]
 # ///
 """BAML <-> Python round trip: serve in BAML, fetch in BAML, orchestrate in Python.
 

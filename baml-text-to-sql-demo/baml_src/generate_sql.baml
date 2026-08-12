@@ -3,18 +3,15 @@
 // and the bridge parses the reply straight into a typed value. No Zod, no manual
 // JSON wrangling like the Mastra `generateObject` call.
 
-client<llm> SqlGenerator {
-    provider: openai,
-    options: {
-        model: env.MODEL,
-        api_key: env.OPENAI_API_KEY,
-        // Low temperature → more deterministic SQL, matching the Mastra tool.
-        temperature: 0.1,
-    },
-}
-
 function GenerateSQL(natural_language_query: string, schema: DatabaseSchema) -> GeneratedSQL {
-    client: SqlGenerator
+    client: openai.OpenAiClient.new(
+        model = (
+            baml.env.get("MODEL") catch_all (e) {
+                _ => null
+            }
+        )
+            ?? "gpt-4o",
+    )
     prompt: `
         You are an expert PostgreSQL query generator. Convert the natural-language
         question into an accurate SQL query.

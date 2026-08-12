@@ -64,7 +64,7 @@ cd baml-text-to-sql-demo
 # Generate the typed Python SDK from baml_src/ (creates ./baml_sdk).
 baml generate --from baml_src
 
-uv sync                       # installs baml_core, psycopg2-binary, pydantic
+uv sync                       # installs baml_bridge, psycopg2-binary, pydantic
 ```
 
 ### 1. Start a local Postgres with Supabase
@@ -88,10 +88,8 @@ export DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres
 
 `DATABASE_URL` points at the local Supabase from step 1 (or any Postgres). `OPENAI_API_KEY` (and any other secrets) arrive via Infisical at run time — see [Run](#run).
 
-> `pyproject.toml` installs the `baml_core` runtime from PyPI (`baml_core==0.13.0`).
-> The BAML CLI used during development is the local toolchain binary
-> (`~/baml/baml_language/target/debug/baml-cli generate --from baml_src`) — swap it
-> for an installed `baml` once the CLI is published.
+> `pyproject.toml` installs the `baml_bridge` runtime from PyPI (`baml_bridge==0.15.1.dev2026081001`).
+> `baml.toml` pins the BAML nightly toolchain that matches the runtime bridge.
 
 ## Run
 

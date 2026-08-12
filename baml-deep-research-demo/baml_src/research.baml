@@ -51,7 +51,7 @@ function extract_learnings(query: string, result: SearchResult) -> Learning {
 
 // Generates the focused initial queries the Mastra researchAgent would produce via
 // tool-calling. (PHASE 1, step 1: "Break down the main topic into 2 specific queries".)
-function plan_research_queries(topic: string, count: int = 2) -> string[] {
+function plan_research_queries(topic: string, count: int) -> string[] {
     client: Planner
     prompt: `
         You are an expert research agent. Break the main research topic into ${count} specific,
@@ -172,7 +172,7 @@ function research_phases(topic: string) -> ResearchData {
     let seen_urls: string[] = [];
 
     // PHASE 1 — initial research. Fan out the planned queries concurrently.
-    let phase1_queries = plan_research_queries(topic);
+    let phase1_queries = plan_research_queries(topic, 2);
     let phase1_parts = await baml.future.all(phase1_queries.map((q) -> {
     spawn { research_one_query(q, seen_urls, "initial") }
   }));

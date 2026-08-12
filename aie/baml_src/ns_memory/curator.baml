@@ -7,14 +7,10 @@
 // context only ever *receives* memory (see `Store.inject`).
 
 // A cheap, fast model — curation is a small classification job, not reasoning.
-client<llm> Curator {
-    provider: anthropic,
-    options: {
-        model: "claude-haiku-4-5-20251001",
-        api_key: env.ANTHROPIC_API_KEY,
-        max_tokens: 1024,
-    },
-}
+client Curator = anthropic.AnthropicClient.new(
+    model = "claude-haiku-4-5-20251001",
+    max_tokens = 1024,
+);
 
 class MemoryEdit {
     op: "save" | "delete",
@@ -34,7 +30,7 @@ function max_edits_per_turn() -> int {
 // Decide what to remember from one finished turn. Returns [] most of the time.
 function curate(turn: string, index: string) -> MemoryEdit[] {
     client: Curator
-    prompt: #"
+    prompt: `
         You maintain the long-term memory of a coding agent. You are NOT the coding agent —
         you only read what just happened and decide what is worth keeping for future sessions.
 
@@ -50,24 +46,24 @@ function curate(turn: string, index: string) -> MemoryEdit[] {
           - secrets, tokens, passwords, or personal data
           - guesses, or anything the user did not confirm
 
-        Use `delete` when the turn shows an existing memory is now wrong or obsolete.
-        To correct a memory, `save` it under the SAME name — that overwrites it.
+        Use \`delete\` when the turn shows an existing memory is now wrong or obsolete.
+        To correct a memory, \`save\` it under the SAME name — that overwrites it.
 
         Most turns are worth nothing. Returning an empty list is the common, correct answer.
         Never return more than 5 edits.
 
         Memories already stored:
         ----------------------------------------------------------------------
-        {{ index }}
+        ${index}
         ----------------------------------------------------------------------
 
         The turn that just finished:
         ----------------------------------------------------------------------
-        {{ turn }}
+        ${turn}
         ----------------------------------------------------------------------
 
-        {{ ctx.output_format }}
-    "#
+        ${ctx.output_format}
+    `
 }
 
 // Apply curator edits to the store. Pure plumbing — invalid edits are dropped,

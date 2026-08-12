@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@boundaryml/baml-core-node':
-        specifier: file:../../../baml2/baml_language/sdks/nodejs/bridge_nodejs
-        version: file:../../../baml2/baml_language/sdks/nodejs/bridge_nodejs
+      '@boundaryml/baml-bridge':
+        specifier: 0.15.1-nightly.20260810.b
+        version: 0.15.1-nightly.20260810.b
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -24,8 +24,48 @@ importers:
 
 packages:
 
-  '@boundaryml/baml-core-node@file:../../../baml2/baml_language/sdks/nodejs/bridge_nodejs':
-    resolution: {directory: ../../../baml2/baml_language/sdks/nodejs/bridge_nodejs, type: directory}
+  '@boundaryml/baml-bridge-darwin-arm64@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-giExzX1zSs8n6Zhk0zxTH3cQwtUvxzRT+ZyQY2rjBL0HFB4CxzzSNYl8mKLhJ+pPiwyzRunAKrwiJrW/TfkPgw==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@boundaryml/baml-bridge-darwin-x64@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-r9ZDUCkzJLhK/Ccrs3B9mC8p5tTrvoIAySZrOzB1aArsj28Q0Hv7eqjO7xzgvLaT2IIxrMWvhnVT9hv6++ywhA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@boundaryml/baml-bridge-linux-arm64-gnu@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-Vjaxmnpqsu6SeNhiy2DWLGugCRymxhJiVyrmDLgU0ukqMkTdq4cvTGT3Gtfvfsqr7nAQQk296QzKglSdx2FDcw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@boundaryml/baml-bridge-linux-arm64-musl@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-aQVd2buh1ZvAoThILkvvUfAUrbTb59AxtLBY/GMR3TOwcSOyajujKt9fZgzPxkzRqVaEjbaUCB9X3skUi5Hvzw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@boundaryml/baml-bridge-linux-x64-gnu@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-3Slmje3FPglfFYoGwAwGRY79+v+pqGrNmUJ138RqQuZoDobSs9Gs9lxF11GcQK50ivM6hNtmxG7IDxKeo+h60Q==}
+    cpu: [x64]
+    os: [linux]
+
+  '@boundaryml/baml-bridge-linux-x64-musl@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-dtbFA3YI/ih1kQeUt/m3GL4+FF4fwFhu/wccstym3POFw0BOGRJgV+ltPtVKHTw/TCqyBq90bhhe1BUMh0ljfg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@boundaryml/baml-bridge-win32-arm64-msvc@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-ixSTkCWWgGB6UN1PRxXmcl3te6f780b1U26dyZ2tgx0DraZ+HoXGNQa+YyxVQP3j1o82TVdjnc6nOImNt8p9WQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@boundaryml/baml-bridge-win32-x64-msvc@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-TeDYRF2lkbbGPFuZfE88Y3xv+uv3K1PgRvpUsCzpgB8sNnUUAIAu714UDKLZK/Zo2Vp9hw5INjUs6cmnj3Xnjw==}
+    cpu: [x64]
+    os: [win32]
+
+  '@boundaryml/baml-bridge@0.15.1-nightly.20260810.b':
+    resolution: {integrity: sha512-fQV7sz0Tq7qGZKduqteN3r09wLkoP+0Svp7lcDOmXUI3tQ+ggu0E3r2hb+FzIIpwlj8aaEi5ttxR1rGhQUco3A==}
 
   '@esbuild/aix-ppc64@0.28.1':
     resolution: {integrity: sha512-Svl7tq8k/08+p6CXPpRjQ1fKX+1odH/BQbb48fV6fj3CWHhsoIOoY87w1oHXm0qEpkIK3ZfVgp0hed3XBXzXMQ==}
@@ -245,9 +285,42 @@ packages:
 
 snapshots:
 
-  '@boundaryml/baml-core-node@file:../../../baml2/baml_language/sdks/nodejs/bridge_nodejs':
+  '@boundaryml/baml-bridge-darwin-arm64@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-darwin-x64@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-linux-arm64-gnu@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-linux-arm64-musl@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-linux-x64-gnu@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-linux-x64-musl@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-win32-arm64-msvc@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge-win32-x64-msvc@0.15.1-nightly.20260810.b':
+    optional: true
+
+  '@boundaryml/baml-bridge@0.15.1-nightly.20260810.b':
     dependencies:
       protobufjs: 7.6.4
+    optionalDependencies:
+      '@boundaryml/baml-bridge-darwin-arm64': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-darwin-x64': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-linux-arm64-gnu': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-linux-arm64-musl': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-linux-x64-gnu': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-linux-x64-musl': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-win32-arm64-msvc': 0.15.1-nightly.20260810.b
+      '@boundaryml/baml-bridge-win32-x64-msvc': 0.15.1-nightly.20260810.b
 
   '@esbuild/aix-ppc64@0.28.1':
     optional: true
