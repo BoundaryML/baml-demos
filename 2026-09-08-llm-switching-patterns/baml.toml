@@ -1,0 +1,10 @@
+[package]
+name = "llm-switching-patterns"
+
+[toolchain]
+version = "0.18.1-nightly.20260906.a"
+
+[generator.app]
+output_type = "typescript/node"
+output_dir = "./src"
+naming_convention = "preserve-case"

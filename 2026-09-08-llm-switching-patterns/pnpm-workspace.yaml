@@ -1,0 +1,19 @@
+packages:
+  - '.'
+
+# This demo intentionally uses the pinned BAML nightly runtime.
+minimumReleaseAgeExclude:
+  - '@boundaryml/baml-bridge@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-darwin-arm64@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-darwin-x64@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-linux-arm64-gnu@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-linux-arm64-musl@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-linux-x64-gnu@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-linux-x64-musl@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-win32-arm64-msvc@0.18.1-nightly.20260906.a'
+  - '@boundaryml/baml-bridge-win32-x64-msvc@0.18.1-nightly.20260906.a'
+
+allowBuilds:
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true

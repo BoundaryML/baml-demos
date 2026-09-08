@@ -1,0 +1,9 @@
+:root { color-scheme: light; --background: #f8faf5; --foreground: #202731; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+button, textarea, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+a { color: inherit; text-decoration: none; }
+button:focus-visible, a:focus-visible { outline: 3px solid #368b75; outline-offset: 4px; }
+::selection { background: #c9e7d9; }

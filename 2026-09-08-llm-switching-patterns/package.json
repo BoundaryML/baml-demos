@@ -1,0 +1,36 @@
+{
+  "name": "llm-switching-patterns",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm baml:generate && node scripts/next.mjs dev --webpack",
+    "build": "pnpm baml:generate && node scripts/next.mjs build --webpack",
+    "start": "node scripts/next.mjs start",
+    "lint": "eslint",
+    "baml:generate": "baml generate",
+    "baml:check": "baml check",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test:e2e": "playwright test",
+    "workos:setup": "node scripts/setup-workos.mjs",
+    "demo:seed": "node scripts/seed-overrides.mjs"
+  },
+  "dependencies": {
+    "@boundaryml/baml-bridge": "0.18.1-nightly.20260906.a",
+    "@workos-inc/authkit-nextjs": "4.3.1",
+    "@workos-inc/node": "^10.13.0",
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.4",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@11.1.3"
+}
