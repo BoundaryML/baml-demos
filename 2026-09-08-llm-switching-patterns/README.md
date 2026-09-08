@@ -1,5 +1,15 @@
 # Launch studio: five ways to switch LLMs
 
+There are five demos in this app for techniques to switch LLMs:
+
+1. Simple plumbing: use either shorthand clients like `client: "openai/gpt-5.2"` or reference statically defined clients e.g. `client: root.shared.DefaultLogo`
+2. Use environment variables: define client constructors that read from envvars, then switch LLM by changing the envvar and restarting the app
+3. Switch on caller context: in the `GenerateLogo` LLM function, use `client: ChooseLlm(org_id, user_id, "GenerateLogo")`, so that in `ChooseLlm`, you can define your own dynamic switching logic based on org ID, user ID, and function name. Choose model based on org and user characteristics, e.g. switch on free vs premium users, or free org plans vs $20/mo org plans or $200/mo org plans.
+4. Code mode: instead of defining your own switching heuristics, ask an LLM to generate a `ChooseLlm()` implementation on the fly (or provide your own), and then run it yourself.
+5. Feature flags: use feature flags to control LLM selection, which allows you to change LLM selection by simply updating a feature flag, instead of by having to do another application release.
+
+## Summary
+
 A pnpm + Next.js app for preparing marketing assets for a product launch. Each demo owns a namespaced `GenerateAssets` entry point: `GenerateLogo` and `GenerateAnnouncementCopy` run in parallel, producing an actual image and structured announcement copy. The UI previews each selected client and lets you generate, view, and download both assets. No app login is required; the WorkOS organization/user picker supplies a simulated request identity.
 
 ```sh
@@ -22,14 +32,16 @@ Copy the two example files once on a fresh checkout. The real `.env.local` and `
 
 Put credentials and optional sign-in configuration in `.env.local`:
 
-| Variable | Value / purpose |
-| --- | --- |
-| `OPENAI_API_KEY` | Your OpenAI API key. Required for the default announcement model and any selected OpenAI model. |
-| `GEMINI_API_KEY` | Your Gemini API key. Required for the default logo model and any selected Google model. |
-| `WORKOS_API_KEY` | A WorkOS API key for the environment containing your demo organizations, users, and feature flags; used by demos 3–5 and optional sign-in. |
-| `WORKOS_CLIENT_ID` | The WorkOS client ID from the same environment. |
-| `WORKOS_COOKIE_PASSWORD` | A random secret of at least 32 characters for optional sign-in session encryption. Generate one with `openssl rand -hex 32` and paste it here. |
-| `NEXT_PUBLIC_WORKOS_REDIRECT_URI` | `http://localhost:3000/auth/callback` locally; register this exact URI in WorkOS. This URL is public, not a secret. |
+
+| Variable                          | Value / purpose                                                                                                                                |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENAI_API_KEY`                  | Your OpenAI API key. Required for the default announcement model and any selected OpenAI model.                                                |
+| `GEMINI_API_KEY`                  | Your Gemini API key. Required for the default logo model and any selected Google model.                                                        |
+| `WORKOS_API_KEY`                  | A WorkOS API key for the environment containing your demo organizations, users, and feature flags; used by demos 3–5 and optional sign-in.     |
+| `WORKOS_CLIENT_ID`                | The WorkOS client ID from the same environment.                                                                                                |
+| `WORKOS_COOKIE_PASSWORD`          | A random secret of at least 32 characters for optional sign-in session encryption. Generate one with `openssl rand -hex 32` and paste it here. |
+| `NEXT_PUBLIC_WORKOS_REDIRECT_URI` | `http://localhost:3000/auth/callback` locally; register this exact URI in WorkOS. This URL is public, not a secret.                            |
+
 
 Demos 1 and 2 can generate assets with just the provider keys. All five demos are public; WorkOS API credentials let the server load routing identities for demos 3–5 without requiring an app login. `WORKOS_COOKIE_PASSWORD` and the callback URI are needed only for `/login`.
 
@@ -56,12 +68,14 @@ Set `WORKOS_COOKIE_PASSWORD` to a random secret of at least 32 characters and `N
 
 Configure these URLs in your WorkOS application's **Redirects** tab:
 
-| Setting | URL |
-| --- | --- |
-| Allowed callback / redirect URI | `http://localhost:3000/auth/callback` |
-| Initiate login URL | `http://localhost:3000/auth/sign-in` |
-| Allowed sign-out URI | `http://localhost:3000/login` |
-| Additional allowed sign-out URI for switching | `http://localhost:3000/auth/sign-in` |
+
+| Setting                                       | URL                                   |
+| --------------------------------------------- | ------------------------------------- |
+| Allowed callback / redirect URI               | `http://localhost:3000/auth/callback` |
+| Initiate login URL                            | `http://localhost:3000/auth/sign-in`  |
+| Allowed sign-out URI                          | `http://localhost:3000/login`         |
+| Additional allowed sign-out URI for switching | `http://localhost:3000/auth/sign-in`  |
+
 
 Register all four URLs in your own WorkOS environment before testing sign-in, logout, and account switching. On another deployment, replace the origin in all four settings and use HTTPS. Auth routes redirect to the configured hostname so the sign-in request and callback share the PKCE cookie.
 
@@ -73,13 +87,15 @@ References: [WorkOS Next.js integration](https://workos.com/docs/authkit/nextjs)
 
 BAML's `ns_` directory convention defines namespaces. Each demo owns its workflow, both LLM functions, and its selection logic. No demo calls another demo's workflow.
 
-| Entry point | Source |
-| --- | --- |
+
+| Entry point            | Source                                                     |
+| ---------------------- | ---------------------------------------------------------- |
 | `demo1.GenerateAssets` | [baml_src/ns_demo1/main.baml](baml_src/ns_demo1/main.baml) |
 | `demo2.GenerateAssets` | [baml_src/ns_demo2/main.baml](baml_src/ns_demo2/main.baml) |
 | `demo3.GenerateAssets` | [baml_src/ns_demo3/main.baml](baml_src/ns_demo3/main.baml) |
 | `demo4.GenerateAssets` | [baml_src/ns_demo4/main.baml](baml_src/ns_demo4/main.baml) |
 | `demo5.GenerateAssets` | [baml_src/ns_demo5/main.baml](baml_src/ns_demo5/main.baml) |
+
 
 Common data contracts live in [baml_src/types.baml](baml_src/types.baml). `ns_shared` contains client construction, asset serialization, and filesystem utilities. The generated TypeScript SDK exports `demo1` through `demo5`; the server dispatches to the selected namespace. Demo 1's `GenerateAssetsWithModels` bridges UI provider/model strings to `demo1.GenerateAssets`'s client parameters. Stored demo 4 override files still declare a standalone `ChooseLlm()` function: reflection compiles them as separate packages.
 
@@ -89,13 +105,15 @@ The default logo model is `google/gemini-3.1-flash-image`; the default copy mode
 
 ## The five demos
 
-| Demo | How the client is selected | When a change takes effect |
-| --- | --- | --- |
-| 1. Pass the clients | Default client parameters or explicit `client=` arguments | Next workflow invocation |
-| 2. Environment variables | A separate provider/model pair for each function | After reloading the server environment |
-| 3. Choose by context | `ChooseLlm` reads a local database using organization, user, and function | Next filesystem read |
-| 4. Store a BAML function | Reflection loads and invokes a complete stored `ChooseLlm()` function | Next function load |
-| 5. Flip it in WorkOS | One live feature flag per asset selects baseline or candidate | After the runtime sync, normally within 5 seconds |
+
+| Demo                     | How the client is selected                                                | When a change takes effect                        |
+| ------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------- |
+| 1. Pass the clients      | Default client parameters or explicit `client=` arguments                 | Next workflow invocation                          |
+| 2. Environment variables | A separate provider/model pair for each function                          | After reloading the server environment            |
+| 3. Choose by context     | `ChooseLlm` reads a local database using organization, user, and function | Next filesystem read                              |
+| 4. Store a BAML function | Reflection loads and invokes a complete stored `ChooseLlm()` function     | Next function load                                |
+| 5. Flip it in WorkOS     | One live feature flag per asset selects baseline or candidate             | After the runtime sync, normally within 5 seconds |
+
 
 ## Demo 1: two parallel calls
 
@@ -214,10 +232,12 @@ Setup reuses the first organization, or creates a demo organization, and ensures
 4. In the app, select **Flip it in WorkOS** and the matching identity.
 5. Toggle either flag in the dashboard, watch its route update, and generate the assets again.
 
-| Flag | Off: baseline | On: candidate |
-| --- | --- | --- |
-| `launch-logo-upgrade` | `google/gemini-3.1-flash-image` | `openai/gpt-image-2` |
-| `launch-copy-upgrade` | `openai/gpt-5.2` | `openai/gpt-5.6-terra` |
+
+| Flag                  | Off: baseline                   | On: candidate          |
+| --------------------- | ------------------------------- | ---------------------- |
+| `launch-logo-upgrade` | `google/gemini-3.1-flash-image` | `openai/gpt-image-2`   |
+| `launch-copy-upgrade` | `openai/gpt-5.2`                | `openai/gpt-5.6-terra` |
+
 
 The server runtime syncs every 5 seconds; the UI polls the evaluated route every 2.5 seconds. Each generation evaluates both flags again and passes the two model choices to `demo5.GenerateAssets`, which runs its own logo and announcement functions in parallel. No application code change is needed to flip between these configured routes. The flags are boolean; adding a third route requires extending the mapping. Customize the slugs in the UI or with `WORKOS_LOGO_FLAG` / `WORKOS_COPY_FLAG`.
 
