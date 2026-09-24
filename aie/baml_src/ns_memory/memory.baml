@@ -138,7 +138,7 @@ class Store {
         let out: Memory[] = [];
         for (let e in baml.fs.read_dir(self.dir)) {
             if (e.is_file && e.name.ends_with(".md")) {
-                let slug = e.name.substring(0, e.name.length() - 3);
+                let slug = e.name.slice(0, e.name.length() - 3);
                 out.push(parse_memory(slug, baml.fs.read(`${self.dir}/${e.name}`)));
             };
         }
@@ -263,7 +263,7 @@ function parse_memory(slug: string, raw: string) -> Memory {
 }
 
 function header_value(line: string, key: string) -> string {
-    line.substring(key.length(), line.length()).trim()
+    line.slice(key.length(), line.length()).trim()
 }
 
 function split_keywords(raw: string) -> string[] {
@@ -290,7 +290,7 @@ function slugify(name: string) -> string {
         };
     }
     let trimmed = if (out.ends_with("-")) {
-        out.substring(0, out.length() - 1)
+        out.slice(0, out.length() - 1)
     } else {
         out
     };

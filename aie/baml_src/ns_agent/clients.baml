@@ -4,11 +4,11 @@
 // To use OpenAI instead, swap `client: Brain` for `client: BrainOpenAI`
 // in baml_src/ns_agent/agent.baml (and set OPENAI_API_KEY).
 
-client Brain = anthropic.AnthropicClient.new(
+client Brain = anthropic.Client.new(
     model = "claude-sonnet-4-6",
     max_tokens = 4096,
 );
 
-client BrainOpenAI = openai.OpenAiClient.new(
+client BrainOpenAI = openai.ChatClient.new(
     model = "gpt-4o",
 );

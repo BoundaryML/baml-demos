@@ -28,7 +28,7 @@ function retry<T>(max_attempts: int, f: () -> T) -> T {
         }
     }
 
-    baml.sys.panic("unreachable code");
+    baml.sys.panic("unreachable code")
 }
 
 function test_retry() -> void {
@@ -77,7 +77,8 @@ function scrape_urls(urls: string[]) -> void {
     }
 }
 
-function main() -> void {
+function main(greet: string) -> void {
+    throw greet;
     scrape_urls(["https://www.google.com", "https://www.yahoo.com", "https://www.bing.com"]);
 }
 

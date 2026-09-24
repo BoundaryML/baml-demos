@@ -13,7 +13,7 @@ function classify(text: string) -> Group[] {
     client: "openai/gpt-4o-mini"
     prompt: `
         Classify the sentiment of this text as Positive, Neutral, or Negative.
-        ${ctx.output_format}
+        ${ctx.output_format()}
 
         ${role("user")}
 
@@ -25,7 +25,7 @@ function judge(text: string, got: Sentiment, expected: Sentiment | null) -> bool
     client: "openai/gpt-4o-mini"
     prompt: `
         Judge if the sentiment classification is correct.
-        ${ctx.output_format}
+        ${ctx.output_format()}
         ${if expected != null}
         Expected: ${expected}
         ${endif}
@@ -38,17 +38,17 @@ function judge(text: string, got: Sentiment, expected: Sentiment | null) -> bool
 }
 
 test "parsing1" {
-    let raw = #"[{"sentiment":"Neutral","reason":"the answer is neutral"}]"#;
+    let raw = `[{"sentiment":"Neutral","reason":"the answer is neutral"}]`;
 
-    let result = classify$parse(raw);
+    let result = classify@spec(raw).parse(raw);
     log.info(result);
     assert.equal(result, [Group { sentiment: Sentiment.Neutral, reason: "the answer is neutral" }]);
 }
 
 test "parsing2" {
-    let raw = #"[{"sentiment":"Neutral","reason":"neutral classification"}]"#;
+    let raw = `[{"sentiment":"Neutral","reason":"neutral classification"}]`;
 
-    let result = classify$parse(raw);
+    let result = classify@spec(raw).parse(raw);
     log.info(result);
     assert.equal(result, [Group { sentiment: Sentiment.Neutral, reason: "neutral classification" }]);
 }

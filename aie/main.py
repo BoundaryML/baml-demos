@@ -21,11 +21,6 @@ def main():
 
 
 
-
-
-
-
-
 async def main_async():
     equation = input("Enter a mathematical expression: ")
     result = await root.math.calculate_async(equation)
@@ -79,7 +74,7 @@ class Decimal:
 def call_me():
     # print(root.hello.d(Demo("scott")))
     def demo() -> str:
-        obj = Demo("this is a bad error")
+        obj = Demo("this is a bad error HELLO THIS IS AARON!")
         print("id:", id(obj))
         raise obj
     o = root.hello.PythonObject(say_hi=demo)

@@ -5,9 +5,9 @@ enum Sentiment {
     Foo,
 }
 
-client AiGatewayImagenImageClient = openai.OpenAiClient.new(
+client AiGatewayImagenImageClient = openai.ImageClient.new(
     model = "google/imagen-4.0-fast-generate-001",
-    api_key_env = "AI_GATEWAY_API_KEY",
+    api_key = env.AI_GATEWAY_API_KEY,
     base_url = "https://ai-gateway.vercel.sh/v1",
 );
 
@@ -18,7 +18,7 @@ function generate_image(thing: string) -> image {
 
         ${thing}
 
-        ${ctx.output_format}
+        ${ctx.output_format()}
     `
 }
 
@@ -51,7 +51,7 @@ function evaluate_image(img: image, goal: string) -> JudgeResponse {
     client: "openai/gpt-4o-mini"
     prompt: `
         Evaluate how well this image matches the goal:
-        ${ctx.output_format}
+        ${ctx.output_format()}
 
         ${role("user")}
 

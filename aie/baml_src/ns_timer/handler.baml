@@ -1,11 +1,5 @@
-function with_timeout<T, E>(millis: int, f: () -> T throws E) -> T {
-    let work = spawn { f() };
-    let timer = spawn {
-        baml.sys.sleep(baml.time.Duration.from_milliseconds(millis));
-    };
-
-    let result = baml.future.race<T, E>([work, timer]);
-    await result
+function with_timeout<T, E>(millis: int, f: () -> T throws E) -> T throws E | baml.errors.Timeout {
+    baml.future.with_timeout(baml.time.Duration.from_milliseconds(millis), f)
 }
 
 class TimeoutError {
@@ -36,6 +30,6 @@ function is_user_selecting_by_location(text: string) -> Location[] {
     prompt: `
         Is the user pruning location: ${text}?
 
-        ${ctx.output_format}
+        ${ctx.output_format()}
     `
 }

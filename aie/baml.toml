@@ -2,7 +2,7 @@
 name = "aie"
 
 [toolchain]
-version = "0.15.1-nightly.20260810.b"
+version = "0.20.2-nightly.20260923.a"
 
 # [scripts]
 # dev = "-f main"

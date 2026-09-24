@@ -41,7 +41,7 @@ function main() -> string {
                 "/queue" | "/q" => say(show_queue(queue)),
                 "/memory" | "/mem" => say(root.memory.store().listing()),
                 let m if m.starts_with("/forget ") => {
-                    say("  " + tool_forget(m.substring(8, m.length()).trim()) + "\n");
+                    say("  " + tool_forget(m.slice(8, m.length()).trim()) + "\n");
                 },
                 "/clear" => {
                     queue = [];
@@ -158,7 +158,7 @@ function decide(transcript: string) -> Step {
         ----------------------------------------------------------------------
 
         Decide the single next step.
-        ${ctx.output_format}
+        ${ctx.output_format()}
     `
 }
 
@@ -505,7 +505,7 @@ function run_supervised(history: string, msg: string) -> Turn {
 // never the whole session — its context stays small and independent.
 function turn_delta(history: string, transcript: string) -> string {
     if (transcript.starts_with(history)) {
-        transcript.substring(history.length(), transcript.length())
+        transcript.slice(history.length(), transcript.length())
     } else {
         transcript
     }
@@ -579,9 +579,9 @@ function show_queue(queue: string[]) -> string {
 // Strip the leading /queue or /q token from a command line.
 function command_arg(msg: string) -> string {
     if (msg.starts_with("/queue ")) {
-        msg.substring(7, msg.length()).trim()
+        msg.slice(7, msg.length()).trim()
     } else if (msg.starts_with("/q ")) {
-        msg.substring(3, msg.length()).trim()
+        msg.slice(3, msg.length()).trim()
     } else {
         msg.trim()
     }
@@ -684,7 +684,7 @@ function with_line_numbers(body: string) -> string {
 
 function clip(text: string, n: int) -> string {
     if (text.length() > n) {
-        text.substring(0, n) + `\n… (${text.length() - n} more chars truncated)`
+        text.slice(0, n) + `\n… (${text.length() - n} more chars truncated)`
     } else {
         text
     }

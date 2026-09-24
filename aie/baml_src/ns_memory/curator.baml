@@ -7,7 +7,7 @@
 // context only ever *receives* memory (see `Store.inject`).
 
 // A cheap, fast model — curation is a small classification job, not reasoning.
-client Curator = anthropic.AnthropicClient.new(
+client Curator = anthropic.Client.new(
     model = "claude-haiku-4-5-20251001",
     max_tokens = 1024,
 );
@@ -62,7 +62,7 @@ function curate(turn: string, index: string) -> MemoryEdit[] {
         ${turn}
         ----------------------------------------------------------------------
 
-        ${ctx.output_format}
+        ${ctx.output_format()}
     `
 }
 
