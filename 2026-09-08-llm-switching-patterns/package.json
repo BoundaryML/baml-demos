@@ -18,7 +18,7 @@
     "@boundaryml/baml-bridge": "0.18.1-nightly.20260906.a",
     "@workos-inc/authkit-nextjs": "4.3.1",
     "@workos-inc/node": "^10.13.0",
-    "next": "16.3.4",
+    "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "0.0.1"
